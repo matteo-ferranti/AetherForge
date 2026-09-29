@@ -1,0 +1,23 @@
+﻿<Application x:Class="AetherForge.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+
+    <Application.Resources>
+
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#F4EFE6"/>
+        <SolidColorBrush x:Key="PanelBrush" Color="#FFF9F0"/>
+        <SolidColorBrush x:Key="PanelAltBrush" Color="#FFFDF8"/>
+
+        <SolidColorBrush x:Key="BronzeBrush" Color="#B9803A"/>
+        <SolidColorBrush x:Key="BronzeLightBrush" Color="#D7C0A1"/>
+
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#5A3825"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#7A6554"/>
+
+        <SolidColorBrush x:Key="TealBrush" Color="#2F9FAA"/>
+        <SolidColorBrush x:Key="TealHoverBrush" Color="#278792"/>
+
+    </Application.Resources>
+
+</Application>

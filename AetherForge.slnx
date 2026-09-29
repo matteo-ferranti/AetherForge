@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AetherForge.App/AetherForge.App.csproj" />
+  </Folder>
+</Solution>

@@ -52,6 +52,9 @@ public static class LanguageService
 
         ["BatchCompletedWithErrorsMessage"] =
     "Operation completed.\n\nCompleted: {0}\nErrors: {1}",
+
+        ["NoConvertibleFilesMessage"] = "There are no files ready for conversion.",
+
     };
 
     private static readonly Dictionary<string, string> Italian = new()
@@ -102,6 +105,9 @@ public static class LanguageService
 
         ["BatchCompletedWithErrorsMessage"] =
     "Operazione completata.\n\nCompletati: {0}\nErrori: {1}",
+
+        ["NoConvertibleFilesMessage"] = "Non ci sono file pronti per la conversione.",
+
     };
 
     public static string CurrentLanguage { get; private set; } = "en";

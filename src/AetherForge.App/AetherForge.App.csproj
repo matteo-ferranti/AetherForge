@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +16,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q8-x64" Version="14.17.1" />
+    <PackageReference Include="Magick.NET-Q8-x64"
+                      Version="14.17.1" />
   </ItemGroup>
+
+  <Target Name="CopyFFmpegTools"
+          AfterTargets="Build">
+
+    <MakeDir Directories="$(OutDir)Tools\FFmpeg" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\..\..\tools\ffmpeg\ffmpeg.exe;$(MSBuildProjectDirectory)\..\..\tools\ffmpeg\ffprobe.exe"
+      DestinationFolder="$(OutDir)Tools\FFmpeg"
+      SkipUnchangedFiles="true" />
+
+  </Target>
+
+  <Target Name="CopyFFmpegToolsToPublish"
+          AfterTargets="Publish">
+
+    <MakeDir Directories="$(PublishDir)Tools\FFmpeg" />
+
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\..\..\tools\ffmpeg\ffmpeg.exe;$(MSBuildProjectDirectory)\..\..\tools\ffmpeg\ffprobe.exe"
+      DestinationFolder="$(PublishDir)Tools\FFmpeg"
+      SkipUnchangedFiles="true" />
+
+  </Target>
 
 </Project>

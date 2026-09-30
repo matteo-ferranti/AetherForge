@@ -480,3 +480,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# FFmpeg local binaries
+tools/ffmpeg/ffmpeg.exe
+tools/ffmpeg/ffprobe.exe

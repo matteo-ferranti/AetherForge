@@ -19,6 +19,7 @@
     <Grid.RowDefinitions>
         <RowDefinition Height="220"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <!-- Selettore lingua -->
@@ -345,9 +346,11 @@
 
     </DataGrid>
 
-    <!-- Barra comandi -->
-  <Grid Grid.Row="4"
+<!-- Barra comandi -->
+
+<Grid Grid.Row="4"
       Margin="0,20,0,0">
+
 
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
@@ -371,24 +374,34 @@
         Click="ClearListButton_Click"
         Cursor="Hand"/>
 
-    <Button
-        x:Name="ConvertButton"
-        Grid.Column="3"
-        Margin="14,0,0,0"
-        Padding="18,8"
-        IsEnabled="False"
-        Click="ConvertButton_Click"
-        Background="{StaticResource BronzeBrush}"
-        Foreground="White"
-        BorderThickness="0"
-        FontWeight="SemiBold"
-        Cursor="Hand"/>
+<Button
+    x:Name="ConvertButton"
+    Grid.Column="3"
+    Margin="14,0,0,0"
+    Padding="18,8"
+    Click="ConvertButton_Click"
+    Background="{StaticResource BronzeBrush}"
+    Foreground="White"
+    BorderThickness="0"
+    FontWeight="SemiBold"
+    Cursor="Hand"/>
 
     </Grid>
 
 </Grid>
 
         </Border>
+
+        <TextBlock
+            x:Name="FooterTextBlock"
+            Grid.Row="2"
+            Margin="0,14,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="12"
+            Foreground="{StaticResource TextSecondaryBrush}"
+            Opacity="0.8"
+            Text="v 1.0.0 | Made by the Messere"/>
 
     </Grid>
 

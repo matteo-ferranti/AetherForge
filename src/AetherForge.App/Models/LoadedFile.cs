@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace AetherForge.App.Models;
 
 public sealed class LoadedFile
@@ -11,4 +13,23 @@ public sealed class LoadedFile
     public required string Format { get; init; }
 
     public required string Size { get; init; }
+
+    public ConversionStatus Status { get; set; } =
+    ConversionStatus.Pending;
+
+    public string StatusText { get; set; } = string.Empty;
+
+    public ObservableCollection<OperationOption> AvailableOperations { get; init; } = [];
+
+    public OperationOption? SelectedOperation { get; set; }
+
+    public int? ResizeWidth { get; set; }
+
+    public int? ResizeHeight { get; set; }
+
+    public int? QualityPercent { get; set; }
+
+    public ObservableCollection<string> AvailableOutputFormats { get; init; } = [];
+
+    public string? SelectedOutputFormat { get; set; }
 }

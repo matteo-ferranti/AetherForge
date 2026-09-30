@@ -1,13 +1,17 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using AetherForge.App.Services;
 using System.Windows;
 
 namespace AetherForge.App;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
-}
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
 
+        LanguageService.SetLanguage("en");
+
+        MainWindow window = new();
+        window.Show();
+    }
+}

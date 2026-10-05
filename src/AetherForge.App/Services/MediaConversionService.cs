@@ -212,6 +212,133 @@ public static class MediaConversionService
             cancellationToken: cancellationToken);
     }
 
+
+public static async Task ConvertAudioAsync(
+    string inputPath,
+    string outputPath,
+    CancellationToken cancellationToken = default)
+{
+    ValidateInputFile(inputPath);
+    ValidateOutputPath(outputPath);
+
+    string outputExtension =
+        Path.GetExtension(outputPath)
+            .ToLowerInvariant();
+
+    string[] supportedExtensions =
+    [
+        ".mp3",
+        ".wav",
+        ".flac",
+        ".aac",
+        ".m4a",
+        ".ogg",
+        ".opus"
+    ];
+
+    if (!supportedExtensions.Contains(
+            outputExtension,
+            StringComparer.OrdinalIgnoreCase))
+    {
+        throw new NotSupportedException(
+            $"Unsupported audio output format: {outputExtension}");
+    }
+
+    List<string> arguments =
+    [
+        "-hide_banner",
+        "-nostdin",
+        "-y",
+
+        "-i",
+        inputPath,
+
+        "-vn",
+
+        outputPath
+    ];
+
+    await FFmpegService.RunFFmpegAsync(
+        arguments,
+        cancellationToken: cancellationToken);
+}
+
+
+public static async Task ChangeAudioQualityAsync(
+    string inputPath,
+    string outputPath,
+    int bitrateKbps,
+    CancellationToken cancellationToken = default)
+{
+    ValidateInputFile(inputPath);
+    ValidateOutputPath(outputPath);
+
+    int[] supportedBitrates =
+    [
+        64, 96, 128, 160, 192, 256, 320
+    ];
+
+    if (!supportedBitrates.Contains(bitrateKbps))
+    {
+        throw new ArgumentOutOfRangeException(
+            nameof(bitrateKbps),
+            "Supported bitrates: 64, 96, 128, 160, 192, 256, 320 kbps.");
+    }
+
+    string inputExtension =
+        Path.GetExtension(inputPath).ToLowerInvariant();
+
+    string outputExtension =
+        Path.GetExtension(outputPath).ToLowerInvariant();
+
+    if (inputExtension != outputExtension)
+    {
+        throw new NotSupportedException(
+            "Changing audio quality must preserve the file format.");
+    }
+
+    string codec = outputExtension switch
+    {
+        ".mp3" => "libmp3lame",
+        ".aac" or ".m4a" => "aac",
+        ".ogg" => "libvorbis",
+        ".opus" => "libopus",
+
+        _ => throw new NotSupportedException(
+            $"Changing audio quality is not supported for: {outputExtension}")
+    };
+
+    List<string> arguments =
+    [
+        "-hide_banner",
+        "-nostdin",
+        "-y",
+
+        "-i",
+        inputPath,
+
+        "-map",
+        "0:a:0",
+
+        "-vn",
+
+        "-c:a",
+        codec,
+
+        "-b:a",
+        bitrateKbps.ToString(
+            System.Globalization.CultureInfo.InvariantCulture) + "k",
+
+        outputPath
+    ];
+
+    await FFmpegService.RunFFmpegAsync(
+        arguments,
+        cancellationToken: cancellationToken);
+}
+
+
+
     private static void ValidateInputFile(
         string inputPath)
     {

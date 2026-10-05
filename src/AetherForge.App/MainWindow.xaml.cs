@@ -272,6 +272,11 @@ public partial class MainWindow : Window
 
 
 
+        AudioBitrateColumn.Header =
+            LanguageService.Get("AudioBitrateText");
+
+
+
         OutputColumn.Header =
 
             LanguageService.Get("OutputText");
@@ -410,33 +415,32 @@ public partial class MainWindow : Window
 
 
 
-    private void UpdateQualityColumnVisibility()
-
-    {
-
-        bool hasQualityOperation =
-
-            _loadedFiles.Any(
-
-                file =>
-
-                    file.Category == "Image" &&
-
-                    file.SelectedOperation?.Operation ==
-
+ private void UpdateQualityColumnVisibility()
+{
+    bool hasImageQualityOperation =
+        _loadedFiles.Any(
+            file =>
+                file.Category == "Image" &&
+                file.SelectedOperation?.Operation ==
                     ConversionOperation.ChangeQuality);
 
+    bool hasAudioQualityOperation =
+        _loadedFiles.Any(
+            file =>
+                file.Category == "Audio" &&
+                file.SelectedOperation?.Operation ==
+                    ConversionOperation.ChangeQuality);
 
+    QualityColumn.Visibility =
+        hasImageQualityOperation
+            ? Visibility.Visible
+            : Visibility.Collapsed;
 
-        QualityColumn.Visibility =
-
-            hasQualityOperation
-
-                ? Visibility.Visible
-
-                : Visibility.Collapsed;
-
-    }
+    AudioBitrateColumn.Visibility =
+        hasAudioQualityOperation
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+}
 
 
 
@@ -506,13 +510,20 @@ public partial class MainWindow : Window
 
         }
 
+        if (file.Category == "Audio")
+        {
+            return file.SelectedOperation.Operation switch
+            {
+                ConversionOperation.Convert => true,
+                ConversionOperation.RemoveMetadata => true,
+                ConversionOperation.ChangeQuality =>
+                    SupportsAudioQuality(file.Format),
+                _ => false
+            };
+        }
 
-
-        return false;
-
+      return false;
     }
-
-
 
     // ---------------------------------------------------------
 
@@ -1116,16 +1127,17 @@ public partial class MainWindow : Window
 
 
 
-                            if (file.Category == "Video")
-
+                            if (file.Category == "Audio")
                             {
-
-                                await MediaConversionService.ConvertVideoAsync(
-
+                                await MediaConversionService.ConvertAudioAsync(
                                     file.FullPath,
-
                                     outputPath);
-
+                            }
+                            else if (file.Category == "Video")
+                            {
+                                await MediaConversionService.ConvertVideoAsync(
+                                    file.FullPath,
+                                    outputPath);
                             }
 
                             else
@@ -1480,7 +1492,7 @@ public partial class MainWindow : Window
 
 
 
-                            if (file.Category == "Video")
+                            if (file.Category is "Video" or "Audio")
 
                             {
 
@@ -1518,73 +1530,68 @@ public partial class MainWindow : Window
 
 
 
-                        case ConversionOperation.ChangeQuality:
+case ConversionOperation.ChangeQuality:
+{
+    bool isAudio = file.Category == "Audio";
 
-                        {
+    if (isAudio)
+    {
+        if (!SupportsAudioQuality(file.Format))
+            continue;
 
-                            if (!file.QualityPercent.HasValue ||
+        if (!file.AudioBitrateKbps.HasValue ||
+            !file.AvailableAudioBitrates.Contains(
+                file.AudioBitrateKbps.Value))
+        {
+            continue;
+        }
+    }
+    else
+    {
+        if (!file.QualityPercent.HasValue ||
+            file.QualityPercent.Value < 1 ||
+            file.QualityPercent.Value > 100)
+        {
+            continue;
+        }
+    }
 
-                                file.QualityPercent.Value < 1 ||
+    string? outputPath =
+        isBatch
+            ? GenerateSafeBatchOutputPath(
+                file,
+                batchOutputDirectory!,
+                file.Format,
+                "quality")
+            : AskSingleOutputPath(
+                file,
+                "quality",
+                file.Format);
 
-                                file.QualityPercent.Value > 100)
+    if (string.IsNullOrWhiteSpace(outputPath))
+        continue;
 
-                            {
+    if (isAudio)
+    {
+        await MediaConversionService.ChangeAudioQualityAsync(
+            file.FullPath,
+            outputPath,
+            file.AudioBitrateKbps!.Value);
+    }
+    else
+    {
+        ImageConversionService.ChangeQuality(
+            file.FullPath,
+            outputPath,
+            (uint)file.QualityPercent!.Value);
+    }
 
-                                continue;
+    MarkFileCompleted(file);
 
-                            }
+    processedFiles++;
 
-
-
-                            string? outputPath =
-
-                                isBatch
-
-                                    ? GenerateSafeBatchOutputPath(
-
-                                        file,
-
-                                        batchOutputDirectory!,
-
-                                        file.Format,
-
-                                        "quality")
-
-                                    : AskSingleOutputPath(
-
-                                        file,
-
-                                        "quality",
-
-                                        file.Format);
-
-
-
-                            if (string.IsNullOrWhiteSpace(outputPath))
-
-                                continue;
-
-
-
-                            ImageConversionService.ChangeQuality(
-
-                                file.FullPath,
-
-                                outputPath,
-
-                                (uint)file.QualityPercent.Value);
-
-
-
-                            MarkFileCompleted(file);
-
-
-
-                            processedFiles++;
-
-                            break;
-
-                        }
+    break;
+}
 
                     }
 
@@ -2654,7 +2661,41 @@ public partial class MainWindow : Window
 
     // ---------------------------------------------------------
 
+private static bool SupportsAudioQuality(string format)
+{
+    return format.ToUpperInvariant() is
+        "MP3" or "AAC" or "M4A" or "OGG" or "OPUS";
+}
 
+private static IEnumerable<OperationOption>
+    GetAvailableAudioOperations(string inputFormat)
+{
+    List<OperationOption> operations =
+    [
+        new OperationOption
+        {
+            Operation = ConversionOperation.Convert,
+            DisplayName = LanguageService.Get("OperationConvert")
+        },
+        new OperationOption
+        {
+            Operation = ConversionOperation.RemoveMetadata,
+            DisplayName = LanguageService.Get("OperationRemoveMetadata")
+        }
+    ];
+
+    if (SupportsAudioQuality(inputFormat))
+    {
+        operations.Add(
+            new OperationOption
+            {
+                Operation = ConversionOperation.ChangeQuality,
+                DisplayName = LanguageService.Get("OperationChangeQuality")
+            });
+    }
+
+    return operations;
+}
 
     private static IEnumerable<OperationOption>
 
@@ -2850,51 +2891,7 @@ public partial class MainWindow : Window
 
 
 
-            "Audio" =>
-
-            [
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.Convert,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationConvert")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.RemoveMetadata,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationRemoveMetadata")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.ChangeQuality,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationChangeQuality")
-
-                }
-
-            ],
+            "Audio" => GetAvailableAudioOperations(inputFormat),
 
 
 

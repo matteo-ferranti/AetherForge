@@ -314,6 +314,48 @@
 </DataGridTemplateColumn>
 
 
+<DataGridTemplateColumn
+    x:Name="AudioBitrateColumn"
+    Width="120">
+
+    <DataGridTemplateColumn.CellTemplate>
+        <DataTemplate>
+            <ComboBox
+                ItemsSource="{Binding AvailableAudioBitrates}"
+                SelectedItem="{Binding AudioBitrateKbps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Height="28"
+                VerticalContentAlignment="Center">
+
+                <ComboBox.Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Visibility"
+                                Value="Collapsed"/>
+
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition
+                                        Binding="{Binding Category}"
+                                        Value="Audio"/>
+
+                                    <Condition
+                                        Binding="{Binding SelectedOperation.Operation}"
+                                        Value="{x:Static models:ConversionOperation.ChangeQuality}"/>
+                                </MultiDataTrigger.Conditions>
+
+                                <Setter Property="Visibility"
+                                        Value="Visible"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+
+            </ComboBox>
+        </DataTemplate>
+    </DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>
+
+
      <DataGridTemplateColumn
          x:Name="OutputColumn"
          Width="120">

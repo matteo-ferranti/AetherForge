@@ -29,6 +29,13 @@ public sealed class LoadedFile
 
     public int? QualityPercent { get; set; }
 
+    public int? AudioBitrateKbps { get; set; } = 192;
+
+    public int[] AvailableAudioBitrates { get; } =
+    [
+        64, 96, 128, 160, 192, 256, 320
+    ];
+
     public ObservableCollection<string> AvailableOutputFormats { get; init; } = [];
 
     public string? SelectedOutputFormat { get; set; }

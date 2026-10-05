@@ -32,6 +32,7 @@ public static class LanguageService
         ["ResizeWidthText"] = "Width",
         ["ResizeHeightText"] = "Height",
         ["QualityText"] = "Quality %",
+        ["AudioBitrateText"] = "Bitrate (kbps)",
 
         ["ConversionCompletedTitle"] = "Conversion completed",
         ["ConversionCompletedMessage"] = "The conversion was completed successfully.",
@@ -85,6 +86,7 @@ public static class LanguageService
         ["ResizeWidthText"] = "Larghezza",
         ["ResizeHeightText"] = "Altezza",
         ["QualityText"] = "Qualità %",
+        ["AudioBitrateText"] = "Bitrate (kbps)",
 
         ["ConversionCompletedTitle"] = "Conversione completata",
         ["ConversionCompletedMessage"] = "La conversione è stata completata con successo.",

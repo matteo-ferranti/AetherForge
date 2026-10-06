@@ -1,0 +1,47 @@
+<Window x:Class="AetherForge.App.CsvSheetSelectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="480"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <StackPanel Margin="20">
+
+        <TextBlock x:Name="FileNameTextBlock"
+                   FontWeight="SemiBold"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12"/>
+
+        <TextBlock x:Name="SheetLabelTextBlock"
+                   Margin="0,0,0,8"/>
+
+        <ComboBox x:Name="SheetComboBox"
+                  DisplayMemberPath="Name"
+                  MinHeight="30"
+                  Margin="0,0,0,12"/>
+
+        <TextBlock x:Name="ExportInfoTextBlock"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,18"/>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+
+            <Button x:Name="CancelButton"
+                    MinWidth="90"
+                    Padding="8,5"
+                    Margin="0,0,10,0"
+                    IsCancel="True"/>
+
+            <Button x:Name="ExportButton"
+                    MinWidth="90"
+                    Padding="8,5"
+                    IsDefault="True"
+                    Click="ExportButton_Click"/>
+
+        </StackPanel>
+    </StackPanel>
+</Window>

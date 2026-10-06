@@ -484,3 +484,10 @@ $RECYCLE.BIN/
 # FFmpeg local binaries
 tools/ffmpeg/ffmpeg.exe
 tools/ffmpeg/ffprobe.exe
+
+# LibreOffice
+/LibreOffice.msi
+/tools/libreoffice/
+
+# Qpdf
+/tools/qpdf/

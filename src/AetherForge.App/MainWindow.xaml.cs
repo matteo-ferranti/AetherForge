@@ -522,6 +522,23 @@ public partial class MainWindow : Window
             };
         }
 
+        if (file.Category == "Document")
+        {
+            return file.SelectedOperation.Operation switch
+            {
+                ConversionOperation.Convert =>
+                    file.Format is
+                        "PDF" or "TXT" or "DOCX" or "DOC" or "ODT" or "RTF" or
+                        "HTML" or "HTM" or "XLS" or "XLSX" or "ODS" or "CSV" or
+                        "PPT" or "PPTX" or "ODP" or "EPUB",
+
+                ConversionOperation.RemoveMetadata =>
+                    DocumentMetadataService.SupportsFormat(file.Format),
+
+                _ => false
+            };
+        }
+
       return false;
     }
 
@@ -1096,6 +1113,32 @@ public partial class MainWindow : Window
                             }
 
 
+int? csvSheetIndex = null;
+
+if (file.Category == "Document" &&
+    (file.Format is "XLS" or "XLSX" or "ODS") &&
+    file.SelectedOutputFormat == "CSV")
+{
+    List<SpreadsheetSheet> sheets =
+        await SpreadsheetConversionService.GetSheetsAsync(
+            file.FullPath);
+
+    CsvSheetSelectionDialog sheetDialog = new(
+        file.Name,
+        sheets)
+    {
+        Owner = this
+    };
+
+    if (sheetDialog.ShowDialog() != true ||
+        sheetDialog.SelectedSheet is null)
+    {
+        continue;
+    }
+
+    csvSheetIndex = sheetDialog.SelectedSheet.Index;
+}
+
 
                             string? outputPath =
 
@@ -1127,7 +1170,89 @@ public partial class MainWindow : Window
 
 
 
-                            if (file.Category == "Audio")
+if (file.Category == "Document")
+{
+    if (file.Format == "PDF" &&
+        file.SelectedOutputFormat == "TXT")
+    {
+        await DocumentConversionService.ConvertPdfToTextAsync(
+            file.FullPath,
+            outputPath);
+    }
+    else if (file.Format == "EPUB" &&
+            (file.SelectedOutputFormat is "PDF" or "TXT"))
+    {
+        if (file.SelectedOutputFormat == "PDF")
+        {
+            await EpubConversionService.ConvertEpubToPdfAsync(
+                file.FullPath,
+                outputPath);
+        }
+        else
+        {
+            await EpubConversionService.ConvertEpubToTextAsync(
+                file.FullPath,
+                outputPath);
+        }
+    }
+    else if (file.Format == "TXT" &&
+             file.SelectedOutputFormat == "PDF")
+    {
+        await DocumentConversionService.ConvertTextToPdfAsync(
+            file.FullPath,
+            outputPath);
+    }
+    else if (file.Format == "DOCX" &&
+             file.SelectedOutputFormat == "TXT")
+    {
+        await DocumentConversionService.ConvertDocxToTextAsync(
+            file.FullPath,
+            outputPath);
+    }
+    else if (file.Format == "CSV" &&
+         file.SelectedOutputFormat == "PDF")
+{
+    await CsvConversionService.ConvertCsvToPdfAsync(
+        file.FullPath,
+        outputPath);
+}
+else if ((file.Format is "PPT" or "PPTX" or "ODP") &&
+         (file.SelectedOutputFormat is
+             "PDF" or "PPT" or "PPTX" or "ODP"))
+{
+    await LibreOfficeService.ConvertDocumentAsync(
+        file.FullPath,
+        outputPath);
+}
+else if ((file.Format is "XLS" or "XLSX" or "ODS") &&
+         (file.SelectedOutputFormat is
+             "PDF" or "XLS" or "XLSX" or "ODS" or "CSV"))
+{
+    await LibreOfficeService.ConvertDocumentAsync(
+        file.FullPath,
+        outputPath,
+        csvSheetIndex: csvSheetIndex);
+}
+
+    else if ((file.Format is "DOCX" or "DOC" or "ODT" or "RTF" or "TXT" or "HTML" or "HTM") &&
+             (file.SelectedOutputFormat is
+                 "PDF" or "DOCX" or "ODT" or "RTF" or "TXT"))
+    {
+        await LibreOfficeService.ConvertDocumentAsync(
+            file.FullPath,
+            outputPath);
+    }
+    else
+    {
+        throw new NotSupportedException(
+            string.Format(
+                LanguageService.Get("UnsupportedDocumentConversion"),
+                file.Format,
+                file.SelectedOutputFormat));
+    }
+}
+
+else if (file.Category == "Audio")
                             {
                                 await MediaConversionService.ConvertAudioAsync(
                                     file.FullPath,
@@ -1492,29 +1617,24 @@ public partial class MainWindow : Window
 
 
 
-                            if (file.Category is "Video" or "Audio")
-
-                            {
-
-                                await MediaConversionService.RemoveMetadataAsync(
-
-                                    file.FullPath,
-
-                                    outputPath);
-
-                            }
-
-                            else
-
-                            {
-
-                                ImageConversionService.RemoveMetadata(
-
-                                    file.FullPath,
-
-                                    outputPath);
-
-                            }
+                           if (file.Category == "Document")
+                                {
+                                    await DocumentMetadataService.RemoveMetadataAsync(
+                                        file.FullPath,
+                                        outputPath);
+                                }
+                                else if (file.Category is "Video" or "Audio")
+                                {
+                                    await MediaConversionService.RemoveMetadataAsync(
+                                        file.FullPath,
+                                        outputPath);
+                                }
+                                else
+                                {
+                                    ImageConversionService.RemoveMetadata(
+                                        file.FullPath,
+                                        outputPath);
+                                }
 
 
 
@@ -2615,28 +2735,29 @@ case ConversionOperation.ChangeQuality:
 
 
 
-                "Document" =>
+                "Document" => inputFormat switch
+                {
+                    "PDF" => new[] { "TXT" },
+                    "EPUB" => new[] { "PDF", "TXT" },
+                    "TXT" => new[] { "PDF", "DOCX", "ODT", "RTF" },
+                    "DOCX" => new[] { "PDF", "TXT", "ODT", "RTF" },
+                    "DOC" => new[] { "PDF", "DOCX", "ODT", "RTF", "TXT" },
+                    "ODT" => new[] { "PDF", "DOCX", "RTF", "TXT" },
+                    "RTF" => new[] { "PDF", "DOCX", "ODT", "TXT" },
+                    "HTML" or "HTM" => new[] { "PDF", "DOCX", "ODT", "RTF", "TXT" },
+                    "XLS" => new[] { "PDF", "XLSX", "ODS", "CSV" },
+                    "XLSX" => new[] { "PDF", "XLS", "ODS", "CSV" },
+                    "ODS" => new[] { "PDF", "XLSX", "XLS", "CSV" },
+                    "CSV" => new[] { "PDF" },
+                    "PPT" => new[] { "PDF", "PPTX", "ODP" },
+                    "PPTX" => new[] { "PDF", "PPT", "ODP" },
+                    "ODP" => new[] { "PDF", "PPTX", "PPT" },
 
-                [
-
-                    "PDF",
-
-                    "DOCX",
-
-                    "ODT",
-
-                    "RTF",
-
-                    "TXT"
-
-                ],
-
-
+                    _ => Array.Empty<string>()
+                },
 
                 _ => []
-
             };
-
 
 
         return formats.Where(
@@ -2696,6 +2817,34 @@ private static IEnumerable<OperationOption>
 
     return operations;
 }
+
+
+private static IEnumerable<OperationOption>
+    GetAvailableDocumentOperations(string inputFormat)
+{
+    List<OperationOption> operations =
+    [
+        new OperationOption
+        {
+            Operation = ConversionOperation.Convert,
+            DisplayName = LanguageService.Get("OperationConvert")
+        }
+    ];
+
+    if (DocumentMetadataService.SupportsFormat(inputFormat))
+    {
+        operations.Add(
+            new OperationOption
+            {
+                Operation = ConversionOperation.RemoveMetadata,
+                DisplayName =
+                    LanguageService.Get("OperationRemoveMetadata")
+            });
+    }
+
+    return operations;
+}
+
 
     private static IEnumerable<OperationOption>
 
@@ -2895,25 +3044,7 @@ private static IEnumerable<OperationOption>
 
 
 
-            "Document" =>
-
-            [
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.Convert,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationConvert")
-
-                }
-
-            ],
-
-
+            "Document" => GetAvailableDocumentOperations(inputFormat),
 
             _ => []
 

@@ -1,10 +1,14 @@
 using System.Collections.ObjectModel;
 
+using System.ComponentModel;
+
 namespace AetherForge.App.Models;
 
-public sealed class LoadedFile
+public sealed class LoadedFile : INotifyPropertyChanged
 {
     public required string FullPath { get; init; }
+
+    public string? OutputPath { get; set; }
 
     public required string Name { get; init; }
 
@@ -38,5 +42,23 @@ public sealed class LoadedFile
 
     public ObservableCollection<string> AvailableOutputFormats { get; init; } = [];
 
-    public string? SelectedOutputFormat { get; set; }
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private string? _selectedOutputFormat;
+
+    public string? SelectedOutputFormat
+    {
+        get => _selectedOutputFormat;
+        set
+        {
+            if (_selectedOutputFormat == value)
+                return;
+
+            _selectedOutputFormat = value;
+
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(nameof(SelectedOutputFormat)));
+        }
+    }
 }

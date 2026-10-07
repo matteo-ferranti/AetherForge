@@ -116,6 +116,118 @@ public static class LanguageService
         ["PdfMetadataError"] =
             "PDF metadata could not be removed. The file may be invalid, encrypted, or could not be processed.",
 
+        ["OperationRotate"] = "Rotate",
+        ["OperationFlip"] = "Flip",
+        ["ImageTransformFileLabel"] = "File: {0}",
+        ["RotationAngleLabel"] = "Rotation angle (clockwise):",
+        ["FlipDirectionLabel"] = "Flip direction:",
+        ["FlipHorizontalLabel"] = "Horizontal — swap left and right",
+        ["FlipVerticalLabel"] = "Vertical — swap top and bottom",
+        ["ImageTransformContinue"] = "Continue",
+
+        ["OperationExtractPages"] = "Extract pages",
+        ["PdfProcessingError"] =
+            "The PDF could not be processed. It may be invalid or require a password.",
+        ["PdfPageRangeInvalid"] =
+            "Choose a valid page range within the document. The last page must be greater than or equal to the first page.",
+
+        ["PdfPagesFileLabel"] = "File: {0}",
+        ["PdfPageCountLabel"] = "Total pages: {0}",
+        ["PdfFirstPageLabel"] = "First page:",
+        ["PdfLastPageLabel"] = "Last page:",
+
+        ["PdfMergeMinimumFiles"] =
+            "Select at least two PDF files to merge.",
+
+        ["PdfMergeSamePath"] =
+            "Choose an output path different from all the original PDF files.",
+
+        ["PdfMergeTitle"] = "Merge PDFs",
+        ["PdfMergeInfo"] =
+            "Add or drag at least two PDF files into this window. All pages will be merged in the order shown, from top to bottom.",
+        ["PdfMergeAdd"] = "Add PDFs",
+        ["PdfMergeRemove"] = "Remove",
+        ["PdfMergeMoveUp"] = "Move up",
+        ["PdfMergeMoveDown"] = "Move down",
+        ["PdfMergeFileFilter"] = "PDF files (*.pdf)|*.pdf",
+        ["PdfMergeSaveTitle"] = "Save merged PDF",
+        ["PdfMergeDefaultFileName"] = "merged.pdf",
+        ["PdfMergeCompleted"] =
+            "PDF files merged successfully.\n\nSaved file:\n{0}",
+        ["PdfMergeFailed"] =
+            "The PDF files could not be merged. Check that the input files are accessible and that you can save to the selected folder.",
+
+        ["OperationTrim"] = "Trim",
+
+        ["MediaToolsMissing"] =
+            "A component required to process audio and video is missing. Reinstall AetherForge.",
+
+        ["MediaDurationUnavailable"] =
+            "The file duration could not be determined.",
+
+        ["MediaTrimSamePath"] =
+            "Choose an output path different from the original file.",
+
+        ["MediaTrimUnsupportedOutput"] =
+            "The selected output format is not supported for trimming.",
+
+        ["MediaTrimInvalidRange"] =
+            "Choose a valid time range within the file. The end time must be greater than the start time.",
+
+        ["MediaTrimFailed"] =
+            "The selected segment could not be saved.",
+
+        ["MediaTrimFileLabel"] = "File: {0}",
+        ["MediaTrimDurationLabel"] = "Total duration: {0} seconds",
+        ["MediaTrimStartLabel"] = "Start time (seconds):",
+        ["MediaTrimEndLabel"] = "End time (seconds):",
+        ["MediaTrimTimeInfo"] =
+            "Enter times in seconds. For example, 90 means 1 minute and 30 seconds. You can use a dot or comma for decimals.",
+
+        ["OpenOutputText"] = "Open file",
+        ["ShowOutputFolderText"] = "Show in folder",
+
+        ["OutputFileUnavailable"] =
+            "The output file is no longer available. It may have been moved or deleted.",
+
+        ["OpenOutputFailed"] =
+            "The file could not be opened. Check that an application is installed to open this file type.",
+
+        ["OpenOutputFolderFailed"] =
+            "The file could not be shown in its folder.",
+
+        ["SaveOutputTitle"] = "Save output file",
+
+        ["OutputFormatFilter"] =
+            "{0} files (*.{1})|*.{1}",
+
+        ["OutputExtensionMismatch"] =
+            "The output file must use the {0} extension.",
+
+        ["OutputMatchesOriginal"] =
+            "An original input file cannot be overwritten. Choose a different file name or folder.",
+
+        ["CannotVerifyOutputSafety"] =
+            "The output file could not be checked safely. Choose a new file name that does not already exist.",
+
+        ["InvalidImageOutput"] =
+            "The generated image is missing or empty. The output file was not replaced.",
+
+        ["InvalidMediaOutput"] =
+            "The output file could not be generated correctly. The destination file was not replaced.",
+
+        ["ArchiveSafetyLimitExceeded"] =
+            "The document exceeds the safety limits for archive size, expanded content, or number of entries.",
+
+        ["DocumentXmlLimitExceeded"] =
+            "A document section exceeds the safety limit for XML content.",
+
+        ["ImageSafetyLimitExceeded"] =
+            "The image exceeds the safety limits for dimensions, complexity or processing resources.",
+
+        ["ErrorDetailsLimited"] =
+            "Only the first 10 errors are shown.",
+
     };
 
     private static readonly Dictionary<string, string> Italian = new()
@@ -227,6 +339,118 @@ public static class LanguageService
         ["PdfMetadataError"] =
             "Impossibile rimuovere i metadati dal PDF. Il file potrebbe non essere valido, essere cifrato oppure non essere elaborabile.",
 
+        ["OperationRotate"] = "Ruota",
+        ["OperationFlip"] = "Capovolgi",
+        ["ImageTransformFileLabel"] = "File: {0}",
+        ["RotationAngleLabel"] = "Angolo di rotazione (senso orario):",
+        ["FlipDirectionLabel"] = "Direzione del ribaltamento:",
+        ["FlipHorizontalLabel"] = "Orizzontale — scambia sinistra e destra",
+        ["FlipVerticalLabel"] = "Verticale — scambia alto e basso",
+        ["ImageTransformContinue"] = "Continua",
+
+        ["OperationExtractPages"] = "Estrai pagine",
+        ["PdfProcessingError"] =
+            "Impossibile elaborare il PDF. Il file potrebbe non essere valido oppure richiedere una password.",
+        ["PdfPageRangeInvalid"] =
+            "Scegli un intervallo di pagine valido all'interno del documento. L'ultima pagina deve essere maggiore o uguale alla prima.",
+
+        ["PdfPagesFileLabel"] = "File: {0}",
+        ["PdfPageCountLabel"] = "Pagine totali: {0}",
+        ["PdfFirstPageLabel"] = "Prima pagina:",
+        ["PdfLastPageLabel"] = "Ultima pagina:",
+
+        ["PdfMergeMinimumFiles"] =
+            "Seleziona almeno due file PDF da unire.",
+
+        ["PdfMergeSamePath"] =
+            "Scegli un percorso di uscita diverso da quello di tutti i PDF originali.",
+
+        ["PdfMergeTitle"] = "Unisci PDF",
+        ["PdfMergeInfo"] =
+            "Aggiungi o trascina almeno due file PDF in questa finestra. Tutte le pagine verranno unite nell'ordine mostrato, dall'alto verso il basso.",
+        ["PdfMergeAdd"] = "Aggiungi PDF",
+        ["PdfMergeRemove"] = "Rimuovi",
+        ["PdfMergeMoveUp"] = "Sposta su",
+        ["PdfMergeMoveDown"] = "Sposta giù",
+        ["PdfMergeFileFilter"] = "File PDF (*.pdf)|*.pdf",
+        ["PdfMergeSaveTitle"] = "Salva PDF unito",
+        ["PdfMergeDefaultFileName"] = "unito.pdf",
+        ["PdfMergeCompleted"] =
+            "PDF uniti correttamente.\n\nFile salvato:\n{0}",
+        ["PdfMergeFailed"] =
+            "Impossibile unire i PDF. Verifica che i file di ingresso siano accessibili e che sia possibile salvare nella cartella selezionata.",
+
+            ["OperationTrim"] = "Taglia",
+
+        ["MediaToolsMissing"] =
+            "Manca un componente necessario per elaborare audio e video. Reinstalla AetherForge.",
+
+        ["MediaDurationUnavailable"] =
+            "Impossibile determinare la durata del file.",
+
+        ["MediaTrimSamePath"] =
+            "Scegli un percorso di uscita diverso da quello del file originale.",
+
+        ["MediaTrimUnsupportedOutput"] =
+            "Il formato di uscita selezionato non è supportato per il taglio.",
+
+        ["MediaTrimInvalidRange"] =
+            "Scegli un intervallo di tempo valido all'interno del file. Il tempo finale deve essere maggiore di quello iniziale.",
+
+        ["MediaTrimFailed"] =
+            "Impossibile salvare il segmento selezionato.",
+
+        ["MediaTrimFileLabel"] = "File: {0}",
+        ["MediaTrimDurationLabel"] = "Durata totale: {0} secondi",
+        ["MediaTrimStartLabel"] = "Tempo iniziale (secondi):",
+        ["MediaTrimEndLabel"] = "Tempo finale (secondi):",
+        ["MediaTrimTimeInfo"] =
+            "Inserisci i tempi in secondi. Ad esempio, 90 indica 1 minuto e 30 secondi. Puoi usare il punto o la virgola per i decimali.",
+
+        ["OpenOutputText"] = "Apri file",
+        ["ShowOutputFolderText"] = "Mostra nella cartella",
+
+        ["OutputFileUnavailable"] =
+            "Il file di uscita non è più disponibile. Potrebbe essere stato spostato o eliminato.",
+
+        ["OpenOutputFailed"] =
+            "Impossibile aprire il file. Verifica che sia installata un'applicazione adatta a questo tipo di file.",
+
+        ["OpenOutputFolderFailed"] =
+            "Impossibile mostrare il file nella sua cartella.",
+
+        ["SaveOutputTitle"] = "Salva file di uscita",
+
+        ["OutputFormatFilter"] =
+            "File {0} (*.{1})|*.{1}",
+
+        ["OutputExtensionMismatch"] =
+            "Il file di uscita deve utilizzare l'estensione {0}.",
+
+        ["OutputMatchesOriginal"] =
+            "Non è possibile sovrascrivere un file originale di ingresso. Scegli un nome o una cartella diversi.",
+
+        ["CannotVerifyOutputSafety"] =
+            "Impossibile verificare in sicurezza il file di uscita. Scegli un nuovo nome di file che non esista già.",
+
+        ["InvalidImageOutput"] =
+            "L'immagine generata è mancante o vuota. Il file di uscita non è stato sostituito.",
+
+        ["InvalidMediaOutput"] =
+            "Impossibile generare correttamente il file di uscita. Il file di destinazione non è stato sostituito.",
+
+        ["ArchiveSafetyLimitExceeded"] =
+            "Il documento supera i limiti di sicurezza per le dimensioni dell'archivio, il contenuto decompresso o il numero di elementi.",
+
+        ["DocumentXmlLimitExceeded"] =
+            "Una sezione del documento supera il limite di sicurezza per il contenuto XML.",
+
+        ["ImageSafetyLimitExceeded"] =
+            "L'immagine supera i limiti di sicurezza per dimensioni, complessità o risorse di elaborazione.",
+
+        ["ErrorDetailsLimited"] =
+            "Sono mostrati soltanto i primi 10 errori.",
+
     };
 
     public static string CurrentLanguage { get; private set; } = "en";
@@ -248,6 +472,83 @@ public static class LanguageService
             Application.Current.Resources[item.Key] = item.Value;
         }
     }
+
+
+    public static string GetUserFriendlyError(
+    Exception exception,
+    string fallbackKey = "ConversionErrorMessage")
+{
+    string[] knownErrorKeys =
+    [
+        "OutputMatchesOriginal",
+        "CannotVerifyOutputSafety",
+        "InvalidImageOutput",
+        "InvalidMediaOutput",
+        "ArchiveSafetyLimitExceeded",
+        "DocumentXmlLimitExceeded",
+        "DocumentMetadataSamePath",
+        "SignedDocumentMetadata",
+        "UnsupportedDocumentMetadata",
+        "InvalidOpenDocumentMetadata",
+        "PdfMetadataError",
+        "PdfProcessingError",
+        "PdfPageRangeInvalid",
+        "PdfMergeMinimumFiles",
+        "PdfMergeSamePath",
+        "PdfMergeFailed",
+        "QpdfNotFound",
+        "InvalidCsvImport",
+        "InvalidCsvSheet",
+        "InvalidEpubFile",
+        "EpubNoText",
+        "UnsupportedEpubConversion",
+        "UnsupportedEpubPdfConversion",
+        "UnsupportedDocumentPdfConversion",
+        "UnsupportedOfficeConversion",
+        "InvalidOfficeOutput",
+        "OfficeConversionFailed",
+        "MediaToolsMissing",
+        "MediaDurationUnavailable",
+        "MediaTrimSamePath",
+        "MediaTrimUnsupportedOutput",
+        "MediaTrimInvalidRange",
+        "MediaTrimFailed"
+    ];
+
+    Exception? current = exception;
+
+    for (int depth = 0; current is not null && depth < 8; depth++)
+    {
+        if (current is ImageMagick.MagickResourceLimitErrorException ||
+    (current is ImageMagick.MagickImageErrorException &&
+     current.Message.StartsWith(
+         "width or height exceeds limit",
+         StringComparison.OrdinalIgnoreCase)))
+{
+    return Get("ImageSafetyLimitExceeded");
+}
+
+        foreach (string key in knownErrorKeys)
+        {
+            bool matchesEnglish =
+                English.TryGetValue(key, out string? english) &&
+                current.Message == english;
+
+            bool matchesItalian =
+                Italian.TryGetValue(key, out string? italian) &&
+                current.Message == italian;
+
+            if (matchesEnglish || matchesItalian)
+            {
+                return Get(key);
+            }
+        }
+
+        current = current.InnerException;
+    }
+
+    return Get(fallbackKey);
+}
 
     public static string Get(string key)
     {

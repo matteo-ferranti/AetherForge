@@ -8,5 +8,9 @@ public enum ConversionOperation
     RemoveAudio,
     RemoveMetadata,
     Resize,
-    ChangeQuality
+    ChangeQuality,
+    Rotate,
+    Flip,
+    ExtractPages,
+    Trim
 }

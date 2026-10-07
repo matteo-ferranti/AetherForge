@@ -11,6 +11,11 @@ public static class LibreOfficeService
         CancellationToken cancellationToken = default,
         int? csvSheetIndex = null)
     {
+        
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
+        
         ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -67,6 +72,16 @@ if (outputExtension == ".csv" &&
 {
     throw new InvalidOperationException(
         LanguageService.Get("InvalidCsvSheet"));
+}
+
+if (inputExtension is ".docx" or ".xlsx" or ".pptx" or
+    ".odt" or ".ods" or ".odp")
+{
+    await Task.Run(
+        () => ArchiveSecurityService.ValidateArchive(
+            inputPath,
+            cancellationToken),
+        cancellationToken);
 }
 
 string exportFilter = outputExtension switch
@@ -131,6 +146,10 @@ string exportFilter = outputExtension switch
         {
             Directory.CreateDirectory(profileDirectory);
             Directory.CreateDirectory(exportDirectory);
+
+            await LibreOfficeSecurityService.PrepareProfileAsync(
+                profileDirectory,
+                cancellationToken);
 
             string conversionInputPath = inputPath;
 string? csvImportFilter = null;
@@ -339,10 +358,15 @@ if (outputExtension == ".pdf")
 
 cancellationToken.ThrowIfCancellationRequested();
 
-File.Copy(
+FileSafetyService.EnsureDifferentFile(
+    inputPath,
+    outputPath);
+
+await SafeOutputService.CopyFileAsync(
+    inputPath,
     generatedFilePath,
     outputPath,
-    overwrite: true);
+    cancellationToken);
         }
         finally
         {

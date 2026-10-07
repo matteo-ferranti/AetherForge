@@ -135,19 +135,34 @@
         FontSize="16"
         Foreground="{StaticResource TextSecondaryBrush}"/>
 
-    <Button
-        x:Name="SelectFilesButton"
-        Grid.Row="2"
-        Width="180"
-        Height="42"
-        HorizontalAlignment="Center"
-        Click="SelectFilesButton_Click"
-        Background="{StaticResource TealBrush}"
-        Foreground="White"
-        BorderThickness="0"
-        FontSize="16"
-        FontWeight="SemiBold"
-        Cursor="Hand"/>
+<StackPanel Grid.Row="2"
+            Orientation="Horizontal"
+            HorizontalAlignment="Center">
+
+    <Button x:Name="SelectFilesButton"
+            Width="180"
+            Height="42"
+            Margin="0,0,12,0"
+            Click="SelectFilesButton_Click"
+            Background="{StaticResource TealBrush}"
+            Foreground="White"
+            BorderThickness="0"
+            FontSize="16"
+            FontWeight="SemiBold"
+            Cursor="Hand"/>
+
+    <Button x:Name="MergePdfsButton"
+            Width="180"
+            Height="42"
+            Click="MergePdfsButton_Click"
+            Background="{StaticResource TealBrush}"
+            Foreground="White"
+            BorderThickness="0"
+            FontSize="16"
+            FontWeight="SemiBold"
+            Cursor="Hand"/>
+
+</StackPanel>
 
     <DataGrid
         x:Name="FilesDataGrid"
@@ -168,10 +183,88 @@
 
 <DataGrid.Columns>
 
-    <DataGridTextColumn
-         x:Name="NameColumn"
-         Binding="{Binding Name}"
-         Width="*"/>
+<DataGridTemplateColumn x:Name="NameColumn"
+                        Width="*">
+
+    <DataGridTemplateColumn.CellTemplate>
+        <DataTemplate>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Name}"
+                           ToolTip="{Binding Name}"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           Margin="0,0,6,0"/>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding Status}"
+                                    Value="{x:Static models:ConversionStatus.Completed}">
+
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <Button Width="26"
+                            Height="26"
+                            Margin="0,0,4,0"
+                            Padding="4"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            ToolTip="{DynamicResource OpenOutputTooltip}"
+                            AutomationProperties.Name="{DynamicResource OpenOutputTooltip}"
+                            Click="OpenRowOutputButton_Click">
+
+                        <Path Data="M 5,3 H 13 L 19,9 V 21 H 5 Z M 13,3 V 9 H 19"
+                              Stroke="{DynamicResource TextPrimaryBrush}"
+                              StrokeThickness="1.5"
+                              Stretch="Uniform"/>
+
+                    </Button>
+
+                    <Button Width="26"
+                            Height="26"
+                            Padding="4"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            ToolTip="{DynamicResource ShowOutputFolderTooltip}"
+                            AutomationProperties.Name="{DynamicResource ShowOutputFolderTooltip}"
+                            Click="ShowRowOutputFolderButton_Click">
+
+                        <Path Data="M 2,6 H 9 L 11,9 H 22 V 20 H 2 Z"
+                              Stroke="{DynamicResource TextPrimaryBrush}"
+                              StrokeThickness="1.5"
+                              Stretch="Uniform"/>
+
+                    </Button>
+
+                </StackPanel>
+            </Grid>
+
+        </DataTemplate>
+    </DataGridTemplateColumn.CellTemplate>
+
+</DataGridTemplateColumn>
 
     <DataGridTextColumn
          x:Name="CategoryColumn"
@@ -393,42 +486,42 @@
 <Grid Grid.Row="4"
       Margin="0,20,0,0">
 
-
     <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
 
-    <Button
-        x:Name="RemoveSelectedButton"
-        Grid.Column="0"
-        Padding="14,8"
-        Margin="0,0,10,0"
-        Click="RemoveSelectedButton_Click"
-        Cursor="Hand"/>
+    <WrapPanel Grid.Column="0"
+               VerticalAlignment="Center">
 
-    <Button
-        x:Name="ClearListButton"
-        Grid.Column="1"
-        Padding="14,8"
-        Click="ClearListButton_Click"
-        Cursor="Hand"/>
+        <Button x:Name="RemoveSelectedButton"
+                Padding="14,8"
+                Margin="0,0,10,8"
+                Click="RemoveSelectedButton_Click"
+                Cursor="Hand"/>
 
-<Button
-    x:Name="ConvertButton"
-    Grid.Column="3"
-    Margin="14,0,0,0"
-    Padding="18,8"
-    Click="ConvertButton_Click"
-    Background="{StaticResource BronzeBrush}"
-    Foreground="White"
-    BorderThickness="0"
-    FontWeight="SemiBold"
-    Cursor="Hand"/>
+        <Button x:Name="ClearListButton"
+                Padding="14,8"
+                Margin="0,0,10,8"
+                Click="ClearListButton_Click"
+                Cursor="Hand"/>
 
-    </Grid>
+
+    </WrapPanel>
+
+    <Button x:Name="ConvertButton"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Margin="14,0,0,8"
+            Padding="18,8"
+            Click="ConvertButton_Click"
+            Background="{StaticResource BronzeBrush}"
+            Foreground="White"
+            BorderThickness="0"
+            FontWeight="SemiBold"
+            Cursor="Hand"/>
+
+</Grid>
 
 </Grid>
 

@@ -11,7 +11,16 @@ public partial class App : Application
 
         LanguageService.SetLanguage("en");
 
+        ImageSecurityService.Initialize();
+
         MainWindow window = new();
         window.Show();
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        ImageSecurityService.Cleanup();
+
+        base.OnExit(e);
     }
 }

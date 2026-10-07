@@ -14,6 +14,8 @@ using System.Windows;
 
 using System.Windows.Controls;
 
+using System.Diagnostics;
+
 
 
 namespace AetherForge.App;
@@ -26,6 +28,7 @@ public partial class MainWindow : Window
 
     private readonly ObservableCollection<LoadedFile> _loadedFiles = [];
 
+    private bool _isProcessing;
 
 
     private static readonly HashSet<string> ImageExtensions =
@@ -172,6 +175,90 @@ public partial class MainWindow : Window
 
     ];
 
+   private void OpenRowOutputButton_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    if (sender is Button button &&
+        button.DataContext is LoadedFile file)
+    {
+        OpenResult(file, showInFolder: false);
+    }
+
+    e.Handled = true;
+}
+
+private void ShowRowOutputFolderButton_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    if (sender is Button button &&
+        button.DataContext is LoadedFile file)
+    {
+        OpenResult(file, showInFolder: true);
+    }
+
+    e.Handled = true;
+}
+
+private void OpenResult(
+    LoadedFile file,
+    bool showInFolder)
+{
+    if (file.Status != ConversionStatus.Completed ||
+        string.IsNullOrWhiteSpace(file.OutputPath))
+    {
+        return;
+    }
+
+    string outputPath = file.OutputPath;
+
+    if (!File.Exists(outputPath))
+    {
+        MessageBox.Show(
+            this,
+            LanguageService.Get("OutputFileUnavailable"),
+            LanguageService.Get("ConversionErrorTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
+
+        return;
+    }
+
+    try
+    {
+        if (showInFolder)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"/select,\"{outputPath}\"",
+                UseShellExecute = true
+            });
+        }
+        else
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = outputPath,
+                UseShellExecute = true
+            });
+        }
+    }
+    catch (Exception)
+    {
+        MessageBox.Show(
+            this,
+            LanguageService.Get(
+                showInFolder
+                    ? "OpenOutputFolderFailed"
+                    : "OpenOutputFailed"),
+            LanguageService.Get("ConversionErrorTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+    }
+}
+
 
 
     public MainWindow()
@@ -311,6 +398,16 @@ public partial class MainWindow : Window
 
             LanguageService.Get("ConvertText");
 
+        MergePdfsButton.Content =
+
+            LanguageService.Get("PdfMergeTitle");
+
+        Resources["OpenOutputTooltip"] =
+            LanguageService.Get("OpenOutputText");
+
+        Resources["ShowOutputFolderTooltip"] =
+            LanguageService.Get("ShowOutputFolderText");
+
     }
 
 
@@ -443,16 +540,195 @@ public partial class MainWindow : Window
 }
 
 
-
-    private void UpdateConvertButtonState()
-
+        private async void MergePdfsButton_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    if (_isProcessing)
     {
-
-        ConvertButton.IsEnabled =
-
-            _loadedFiles.Any(CanProcessFile);
-
+        return;
     }
+
+    var mergeDialog = new PdfMergeDialog
+    {
+        Owner = this
+    };
+
+    if (mergeDialog.ShowDialog() != true)
+    {
+        return;
+    }
+
+    IReadOnlyList<string> inputPaths =
+        mergeDialog.SelectedFiles;
+
+    var saveDialog = new SaveFileDialog
+    {
+        Title = LanguageService.Get("PdfMergeSaveTitle"),
+        Filter = LanguageService.Get("PdfMergeFileFilter"),
+        FileName = LanguageService.Get("PdfMergeDefaultFileName"),
+        DefaultExt = ".pdf",
+        AddExtension = true,
+        OverwritePrompt = true
+    };
+
+    if (saveDialog.ShowDialog(this) != true)
+    {
+        return;
+    }
+
+    string outputPath = Path.GetFullPath(saveDialog.FileName);
+
+    if (!Path.GetExtension(outputPath).Equals(
+        ".pdf",
+        StringComparison.OrdinalIgnoreCase))
+{
+    MessageBox.Show(
+        this,
+        string.Format(
+            LanguageService.Get("OutputExtensionMismatch"),
+            ".pdf"),
+        LanguageService.Get("ConversionErrorTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Warning);
+
+    return;
+}
+
+if (_loadedFiles.Any(file =>
+    string.Equals(
+        Path.GetFullPath(file.FullPath),
+        outputPath,
+        StringComparison.OrdinalIgnoreCase)))
+{
+    MessageBox.Show(
+        this,
+        LanguageService.Get("OutputMatchesOriginal"),
+        LanguageService.Get("ConversionErrorTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Warning);
+
+    return;
+}
+
+    if (!Path.GetExtension(outputPath).Equals(
+        ".pdf",
+        StringComparison.OrdinalIgnoreCase))
+{
+    MessageBox.Show(
+        this,
+        string.Format(
+            LanguageService.Get("OutputExtensionMismatch"),
+            ".pdf"),
+        LanguageService.Get("ConversionErrorTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Warning);
+
+    return;
+}
+
+if (_loadedFiles.Any(file =>
+    string.Equals(
+        Path.GetFullPath(file.FullPath),
+        outputPath,
+        StringComparison.OrdinalIgnoreCase)))
+{
+    MessageBox.Show(
+        this,
+        LanguageService.Get("OutputMatchesOriginal"),
+        LanguageService.Get("ConversionErrorTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Warning);
+
+    return;
+}
+
+    if (inputPaths.Any(path =>
+        string.Equals(
+            Path.GetFullPath(path),
+            outputPath,
+            StringComparison.OrdinalIgnoreCase)))
+    {
+        MessageBox.Show(
+            this,
+            LanguageService.Get("PdfMergeSamePath"),
+            LanguageService.Get("ConversionErrorTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
+
+        return;
+    }
+
+    _isProcessing = true;
+    UpdateConvertButtonState();
+
+    string? errorMessage = null;
+
+    try
+    {
+        await PdfPageService.MergePdfsAsync(
+            inputPaths,
+            outputPath);
+    }
+
+
+    catch (Exception exception)
+    {
+        string qpdfPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Tools",
+            "QPDF",
+            "bin",
+            "qpdf.exe");
+
+        if (!File.Exists(qpdfPath))
+        {
+            errorMessage = LanguageService.Get("QpdfNotFound");
+        }
+        else
+        {
+            errorMessage = LanguageService.GetUserFriendlyError(
+                exception,
+                "PdfMergeFailed");
+        }
+    }
+    finally
+    {
+        _isProcessing = false;
+        UpdateConvertButtonState();
+    }
+
+    if (errorMessage is not null)
+    {
+        MessageBox.Show(
+            this,
+            errorMessage,
+            LanguageService.Get("ConversionErrorTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+
+        return;
+    }
+
+    MessageBox.Show(
+        this,
+        string.Format(
+            LanguageService.Get("PdfMergeCompleted"),
+            outputPath),
+        LanguageService.Get("ConversionCompletedTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Information);
+}
+
+
+        private void UpdateConvertButtonState()
+        {
+            ConvertButton.IsEnabled =
+                !_isProcessing &&
+                _loadedFiles.Any(CanProcessFile);
+
+            MergePdfsButton.IsEnabled = !_isProcessing;
+        }
 
 
 
@@ -475,39 +751,27 @@ public partial class MainWindow : Window
 
 
         if (file.Category == "Image")
-
         {
-
             return file.SelectedOperation.Operation is
-
                 ConversionOperation.Convert or
-
                 ConversionOperation.Resize or
-
                 ConversionOperation.RemoveMetadata or
-
-                ConversionOperation.ChangeQuality;
-
+                ConversionOperation.ChangeQuality or
+                ConversionOperation.Rotate or
+                ConversionOperation.Flip;
         }
 
 
 
         if (file.Category == "Video")
-
         {
-
             return file.SelectedOperation.Operation is
-
                 ConversionOperation.Convert or
-
                 ConversionOperation.ExtractAudio or
-
                 ConversionOperation.RemoveAudio or
-
                 ConversionOperation.RemoveMetadata or
-
-                ConversionOperation.CreateGif;
-
+                ConversionOperation.CreateGif or
+                ConversionOperation.Trim;
         }
 
         if (file.Category == "Audio")
@@ -518,6 +782,7 @@ public partial class MainWindow : Window
                 ConversionOperation.RemoveMetadata => true,
                 ConversionOperation.ChangeQuality =>
                     SupportsAudioQuality(file.Format),
+                ConversionOperation.Trim => true,
                 _ => false
             };
         }
@@ -534,6 +799,9 @@ public partial class MainWindow : Window
 
                 ConversionOperation.RemoveMetadata =>
                     DocumentMetadataService.SupportsFormat(file.Format),
+
+                ConversionOperation.ExtractPages =>
+                    file.Format == "PDF",
 
                 _ => false
             };
@@ -1070,9 +1338,12 @@ public partial class MainWindow : Window
 
         int failedFiles = 0;
 
+        List<(string FileName, Exception Error)> errorDetails = [];
 
 
-        ConvertButton.IsEnabled = false;
+
+        _isProcessing = true;
+        UpdateConvertButtonState();
 
 
 
@@ -1323,7 +1594,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1389,7 +1660,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1443,7 +1714,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1497,7 +1768,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1507,6 +1778,177 @@ else if (file.Category == "Audio")
 
                         }
 
+case ConversionOperation.Rotate:
+case ConversionOperation.Flip:
+{
+    bool rotating =
+        file.SelectedOperation.Operation ==
+        ConversionOperation.Rotate;
+
+    var dialog = new ImageTransformDialog(
+        file.Name,
+        rotating)
+    {
+        Owner = this
+    };
+
+    if (dialog.ShowDialog() != true)
+    {
+        continue;
+    }
+
+    int degrees = dialog.SelectedDegrees;
+    bool horizontal = dialog.SelectedHorizontal;
+
+    string suffix = rotating
+        ? $"rotated_{degrees}"
+        : horizontal
+            ? "flipped_horizontal"
+            : "flipped_vertical";
+
+    string? outputPath = isBatch
+        ? GenerateSafeBatchOutputPath(
+            file,
+            batchOutputDirectory!,
+            file.Format,
+            suffix)
+        : AskSingleOutputPath(
+            file,
+            suffix,
+            file.Format);
+
+    if (string.IsNullOrWhiteSpace(outputPath))
+    {
+        continue;
+    }
+
+    await Task.Run(() =>
+    {
+        if (rotating)
+        {
+            ImageConversionService.RotateImage(
+                file.FullPath,
+                outputPath,
+                degrees);
+        }
+        else
+        {
+            ImageConversionService.FlipImage(
+                file.FullPath,
+                outputPath,
+                horizontal);
+        }
+    });
+
+    MarkFileCompleted(file, outputPath);
+    processedFiles++;
+
+    break;
+}
+
+case ConversionOperation.ExtractPages:
+{
+    int pageCount = await PdfPageService.GetPageCountAsync(
+        file.FullPath);
+
+    var dialog = new PdfPageSelectionDialog(
+        file.Name,
+        pageCount)
+    {
+        Owner = this
+    };
+
+    if (dialog.ShowDialog() != true)
+    {
+        continue;
+    }
+
+    string suffix =
+        $"pages_{dialog.FirstPage}-{dialog.LastPage}";
+
+    string? outputPath = isBatch
+        ? GenerateSafeBatchOutputPath(
+            file,
+            batchOutputDirectory!,
+            "PDF",
+            suffix)
+        : AskSingleOutputPath(
+            file,
+            suffix,
+            "PDF");
+
+    if (string.IsNullOrWhiteSpace(outputPath))
+    {
+        continue;
+    }
+
+    await PdfPageService.ExtractPagesAsync(
+        file.FullPath,
+        outputPath,
+        dialog.FirstPage,
+        dialog.LastPage);
+
+    MarkFileCompleted(file, outputPath);
+    processedFiles++;
+
+    break;
+}
+
+
+case ConversionOperation.Trim:
+{
+    string? outputFormat = file.SelectedOutputFormat;
+
+    if (string.IsNullOrWhiteSpace(outputFormat))
+    {
+        continue;
+    }
+
+    bool audioOnly = file.Category == "Audio";
+
+    TimeSpan duration = await MediaTrimService.GetDurationAsync(
+        file.FullPath);
+
+    var dialog = new MediaTrimDialog(
+        file.Name,
+        duration)
+    {
+        Owner = this
+    };
+
+    if (dialog.ShowDialog() != true)
+    {
+        continue;
+    }
+
+    string? outputPath = isBatch
+        ? GenerateSafeBatchOutputPath(
+            file,
+            batchOutputDirectory!,
+            outputFormat,
+            "trimmed")
+        : AskSingleOutputPath(
+            file,
+            "trimmed",
+            outputFormat);
+
+    if (string.IsNullOrWhiteSpace(outputPath))
+    {
+        continue;
+    }
+
+    await MediaTrimService.TrimAsync(
+        file.FullPath,
+        outputPath,
+        dialog.StartTime,
+        dialog.EndTime,
+        audioOnly);
+
+    MarkFileCompleted(file, outputPath);
+    processedFiles++;
+
+    break;
+}
 
 
                         case ConversionOperation.Resize:
@@ -1571,7 +2013,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1638,7 +2080,7 @@ else if (file.Category == "Audio")
 
 
 
-                            MarkFileCompleted(file);
+                            MarkFileCompleted(file, outputPath);
 
 
 
@@ -1706,7 +2148,7 @@ case ConversionOperation.ChangeQuality:
             (uint)file.QualityPercent!.Value);
     }
 
-    MarkFileCompleted(file);
+    MarkFileCompleted(file, outputPath);
 
     processedFiles++;
 
@@ -1717,35 +2159,28 @@ case ConversionOperation.ChangeQuality:
 
                 }
 
-                catch
-
+                catch (Exception exception)
                 {
+                    file.Status = ConversionStatus.Error;
 
-                    file.Status =
-
-                        ConversionStatus.Error;
-
-
-
-                    file.StatusText =
-
-                        GetStatusText(
-
-                            ConversionStatus.Error);
-
-
+                    file.StatusText = GetStatusText(
+                        ConversionStatus.Error);
 
                     failedFiles++;
 
+                    if (errorDetails.Count < 10)
+                    {
+                        errorDetails.Add((
+                            Path.GetFileName(file.FullPath),
+                            exception));
+                    }
                 }
-
-            }
-
-        }
-
+            } // Chiude foreach
+        } // Chiude try
         finally
 
         {
+            _isProcessing = false;
 
             FilesDataGrid.Items.Refresh();
 
@@ -1779,39 +2214,39 @@ case ConversionOperation.ChangeQuality:
 
 
 
-        if (failedFiles > 0)
+ if (failedFiles > 0)
+{
+    string message = string.Format(
+        LanguageService.Get("BatchCompletedWithErrorsMessage"),
+        processedFiles,
+        failedFiles);
 
-        {
+    foreach (var detail in errorDetails)
+    {
+        message +=
+            Environment.NewLine +
+            Environment.NewLine +
+            detail.FileName + ": " +
+            LanguageService.GetUserFriendlyError(detail.Error);
+    }
 
-            string message =
+    if (failedFiles > errorDetails.Count)
+    {
+        message +=
+            Environment.NewLine +
+            Environment.NewLine +
+            LanguageService.Get("ErrorDetailsLimited");
+    }
 
-                string.Format(
+    MessageBox.Show(
+        this,
+        message,
+        LanguageService.Get("ConversionErrorTitle"),
+        MessageBoxButton.OK,
+        MessageBoxImage.Warning);
 
-                    LanguageService.Get(
-
-                        "BatchCompletedWithErrorsMessage"),
-
-                    processedFiles,
-
-                    failedFiles);
-
-
-
-            MessageBox.Show(
-
-                message,
-
-                LanguageService.Get("ConversionCompletedTitle"),
-
-                MessageBoxButton.OK,
-
-                MessageBoxImage.Information);
-
-
-
-            return;
-
-        }
+    return;
+}
 
 
 
@@ -1829,26 +2264,17 @@ case ConversionOperation.ChangeQuality:
 
 
 
-    private static void MarkFileCompleted(
-
-        LoadedFile file)
-
+    private void MarkFileCompleted(
+        LoadedFile file,
+        string outputPath)
     {
+        file.OutputPath = Path.GetFullPath(outputPath);
 
-        file.Status =
+        file.Status = ConversionStatus.Completed;
 
-            ConversionStatus.Completed;
-
-
-
-        file.StatusText =
-
-            GetStatusText(
-
-                ConversionStatus.Completed);
-
+        file.StatusText = GetStatusText(
+            ConversionStatus.Completed);
     }
-
 
 
     // ---------------------------------------------------------
@@ -1860,58 +2286,80 @@ case ConversionOperation.ChangeQuality:
 
 
     private string? AskSingleOutputPath(
+    LoadedFile file,
+    string defaultSuffix,
+    string outputFormat)
+{
+    string extension = outputFormat.ToLowerInvariant();
 
-        LoadedFile file,
+    string defaultFileName =
+        $"{Path.GetFileNameWithoutExtension(file.FullPath)}_" +
+        $"{defaultSuffix}.{extension}";
 
-        string defaultSuffix,
-
-        string outputFormat)
-
+    var dialog = new SaveFileDialog
     {
+        FileName = defaultFileName,
+        DefaultExt = "." + extension,
+        AddExtension = true,
+        OverwritePrompt = true,
+        CheckPathExists = true,
 
-        string defaultFileName =
+        Filter = string.Format(
+            LanguageService.Get("OutputFormatFilter"),
+            outputFormat.ToUpperInvariant(),
+            extension),
 
-            $"{Path.GetFileNameWithoutExtension(file.FullPath)}_{defaultSuffix}.{outputFormat.ToLowerInvariant()}";
+        Title = LanguageService.Get("SaveOutputTitle")
+    };
 
+    while (dialog.ShowDialog(this) == true)
+    {
+        string outputPath = Path.GetFullPath(dialog.FileName);
 
-
-        SaveFileDialog dialog = new()
-
+        if (!Path.GetExtension(outputPath).Equals(
+                "." + extension,
+                StringComparison.OrdinalIgnoreCase))
         {
+            MessageBox.Show(
+                this,
+                string.Format(
+                    LanguageService.Get("OutputExtensionMismatch"),
+                    "." + extension),
+                LanguageService.Get("ConversionErrorTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
 
-            FileName = defaultFileName,
+            continue;
+        }
 
-            DefaultExt = "." + outputFormat.ToLowerInvariant(),
+        bool matchesOriginal =
+            string.Equals(
+                outputPath,
+                Path.GetFullPath(file.FullPath),
+                StringComparison.OrdinalIgnoreCase) ||
+            _loadedFiles.Any(loadedFile =>
+                string.Equals(
+                    outputPath,
+                    Path.GetFullPath(loadedFile.FullPath),
+                    StringComparison.OrdinalIgnoreCase));
 
-            AddExtension = true,
+        if (matchesOriginal)
+        {
+            MessageBox.Show(
+                this,
+                LanguageService.Get("OutputMatchesOriginal"),
+                LanguageService.Get("ConversionErrorTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
 
-            OverwritePrompt = true,
+            continue;
+        }
 
-
-
-            Title = LanguageService.CurrentLanguage == "it"
-
-                ? "Salva file convertito"
-
-                : "Save converted file"
-
-        };
-
-
-
-        bool? result =
-
-            dialog.ShowDialog();
-
-
-
-        return result == true
-
-            ? dialog.FileName
-
-            : null;
-
+        return outputPath;
     }
+
+    return null;
+}
 
 
 
@@ -2621,7 +3069,14 @@ case ConversionOperation.ChangeQuality:
 
                 ],
 
+                ConversionOperation.Rotate => [file.Format],
+                ConversionOperation.Flip => [file.Format],
 
+                ConversionOperation.ExtractPages => ["PDF"],
+
+                ConversionOperation.Trim =>
+                    MediaTrimService.GetOutputFormats(file.Category == "Audio")
+                        .OrderByDescending(format => format == file.Format),
 
                 _ => []
 
@@ -2805,6 +3260,12 @@ private static IEnumerable<OperationOption>
         }
     ];
 
+    operations.Add(new OperationOption
+    {
+        Operation = ConversionOperation.Trim,
+        DisplayName = LanguageService.Get("OperationTrim")
+    });
+
     if (SupportsAudioQuality(inputFormat))
     {
         operations.Add(
@@ -2830,6 +3291,15 @@ private static IEnumerable<OperationOption>
             DisplayName = LanguageService.Get("OperationConvert")
         }
     ];
+
+    if (inputFormat == "PDF")
+    {
+        operations.Add(new OperationOption
+        {
+            Operation = ConversionOperation.ExtractPages,
+            DisplayName = LanguageService.Get("OperationExtractPages")
+        });
+    }
 
     if (DocumentMetadataService.SupportsFormat(inputFormat))
     {
@@ -2906,6 +3376,18 @@ private static IEnumerable<OperationOption>
 
             ];
 
+            operations.Add(new OperationOption
+{
+    Operation = ConversionOperation.Rotate,
+    DisplayName = LanguageService.Get("OperationRotate")
+});
+
+operations.Add(new OperationOption
+{
+    Operation = ConversionOperation.Flip,
+    DisplayName = LanguageService.Get("OperationFlip")
+});
+
 
 
             bool supportsQuality =
@@ -2964,79 +3446,39 @@ private static IEnumerable<OperationOption>
 
         {
 
-            "Video" =>
-
-            [
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.Convert,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationConvert")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.ExtractAudio,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationExtractAudio")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.CreateGif,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationCreateGif")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.RemoveAudio,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationRemoveAudio")
-
-                },
-
-
-
-                new OperationOption
-
-                {
-
-                    Operation = ConversionOperation.RemoveMetadata,
-
-                    DisplayName =
-
-                        LanguageService.Get("OperationRemoveMetadata")
-
-                }
-
-            ],
+           "Video" =>
+[
+    new OperationOption
+    {
+        Operation = ConversionOperation.Convert,
+        DisplayName = LanguageService.Get("OperationConvert")
+    },
+    new OperationOption
+    {
+        Operation = ConversionOperation.ExtractAudio,
+        DisplayName = LanguageService.Get("OperationExtractAudio")
+    },
+    new OperationOption
+    {
+        Operation = ConversionOperation.CreateGif,
+        DisplayName = LanguageService.Get("OperationCreateGif")
+    },
+    new OperationOption
+    {
+        Operation = ConversionOperation.RemoveAudio,
+        DisplayName = LanguageService.Get("OperationRemoveAudio")
+    },
+    new OperationOption
+    {
+        Operation = ConversionOperation.RemoveMetadata,
+        DisplayName = LanguageService.Get("OperationRemoveMetadata")
+    },
+    new OperationOption
+    {
+        Operation = ConversionOperation.Trim,
+        DisplayName = LanguageService.Get("OperationTrim")
+    }
+],
 
 
 

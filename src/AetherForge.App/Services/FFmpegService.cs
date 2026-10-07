@@ -88,6 +88,9 @@ public static async Task<string> RunFFprobeAsync(
             WorkingDirectory = AppContext.BaseDirectory
         };
 
+        startInfo.ArgumentList.Add("-protocol_whitelist");
+        startInfo.ArgumentList.Add("file,pipe");
+
         foreach (string argument in arguments)
         {
             startInfo.ArgumentList.Add(argument);
@@ -105,12 +108,10 @@ public static async Task<string> RunFFprobeAsync(
         }
 
         Task<string> standardOutputTask =
-            process.StandardOutput.ReadToEndAsync(
-                cancellationToken);
+            process.StandardOutput.ReadToEndAsync();
 
         Task<string> standardErrorTask =
-            process.StandardError.ReadToEndAsync(
-                cancellationToken);
+            process.StandardError.ReadToEndAsync();
 
         TimeSpan effectiveTimeout =
             timeout ?? DefaultTimeout;
@@ -132,10 +133,14 @@ public static async Task<string> RunFFprobeAsync(
         {
             TryKillProcess(process);
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw;
-            }
+            await process.WaitForExitAsync(
+                CancellationToken.None);
+
+            await Task.WhenAll(
+                standardOutputTask,
+                standardErrorTask);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             throw new TimeoutException(
                 $"FFmpeg process exceeded the timeout of {effectiveTimeout}.");
@@ -171,9 +176,9 @@ public static async Task<string> RunFFprobeAsync(
                     entireProcessTree: true);
             }
         }
-        catch
+        catch (InvalidOperationException) when (process.HasExited)
         {
-            // Best effort cleanup.
+            // Il processo si è chiuso tra il controllo e Kill.
         }
     }
 }

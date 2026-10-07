@@ -1,0 +1,64 @@
+<Window x:Class="AetherForge.App.PdfPageSelectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="440"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <StackPanel Margin="20">
+
+        <TextBlock x:Name="FileNameTextBlock"
+                   FontWeight="SemiBold"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,8"/>
+
+        <TextBlock x:Name="PageCountTextBlock"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,16"/>
+
+        <TextBlock x:Name="FirstPageLabel"
+                   Margin="0,0,0,6"/>
+
+        <TextBox x:Name="FirstPageTextBox"
+                 Text="1"
+                 MinHeight="30"
+                 VerticalContentAlignment="Center"
+                 Margin="0,0,0,12"/>
+
+        <TextBlock x:Name="LastPageLabel"
+                   Margin="0,0,0,6"/>
+
+        <TextBox x:Name="LastPageTextBox"
+                 Text="1"
+                 MinHeight="30"
+                 VerticalContentAlignment="Center"
+                 Margin="0,0,0,12"/>
+
+        <TextBlock x:Name="ErrorTextBlock"
+                   TextWrapping="Wrap"
+                   Visibility="Collapsed"
+                   Margin="0,0,0,12"/>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,0">
+
+            <Button x:Name="CancelButton"
+                    MinWidth="90"
+                    Padding="8,5"
+                    Margin="0,0,10,0"
+                    IsCancel="True"/>
+
+            <Button x:Name="ExtractButton"
+                    MinWidth="90"
+                    Padding="8,5"
+                    IsDefault="True"
+                    Click="ExtractButton_Click"/>
+
+        </StackPanel>
+
+    </StackPanel>
+</Window>

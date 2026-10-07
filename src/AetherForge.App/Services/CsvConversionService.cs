@@ -16,6 +16,11 @@ public static class CsvConversionService
         string outputPath,
         CancellationToken cancellationToken = default)
     {
+        
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
+        
         ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 

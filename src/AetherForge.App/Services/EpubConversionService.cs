@@ -16,6 +16,10 @@ public static class EpubConversionService
         string outputPath,
         CancellationToken cancellationToken = default)
     {
+        FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+        
         ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -41,6 +45,10 @@ public static class EpubConversionService
         string extractedText = await Task.Run(
             () =>
             {
+                ArchiveSecurityService.ValidateArchive(
+                    inputPath,
+                    cancellationToken);
+                
                 using ZipArchive archive =
                     ZipFile.OpenRead(inputPath);
 
@@ -205,19 +213,23 @@ public static class EpubConversionService
             },
             cancellationToken);
 
-        await File.WriteAllTextAsync(
-            outputPath,
-            extractedText,
-            new UTF8Encoding(false),
-            cancellationToken);
+await SafeOutputService.WriteTextAsync(
+    inputPath,
+    outputPath,
+    extractedText,
+    new UTF8Encoding(false),
+    cancellationToken);
     }
-
 
     public static async Task ConvertEpubToPdfAsync(
     string inputPath,
     string outputPath,
     CancellationToken cancellationToken = default)
 {
+    FileSafetyService.EnsureDifferentFile(
+    inputPath,
+    outputPath);
+    
     ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
     ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -289,14 +301,7 @@ public static class EpubConversionService
             throw new InvalidDataException(invalidMessage);
         }
 
-        using Stream stream = entry.Open();
-
-        using StreamReader reader = new(
-            stream,
-            new UTF8Encoding(false, true),
-            detectEncodingFromByteOrderMarks: true);
-
-        string xml = reader.ReadToEnd();
+        string xml = ArchiveSecurityService.ReadXmlText(entry);
 
         // Convert common HTML entities into numeric XML entities.
         xml = Regex.Replace(

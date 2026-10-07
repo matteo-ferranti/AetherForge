@@ -20,6 +20,11 @@ public static class DocumentConversionService
         string outputPath,
         CancellationToken cancellationToken = default)
     {
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
+
         ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -94,11 +99,12 @@ public static class DocumentConversionService
             },
             cancellationToken);
 
-        await File.WriteAllTextAsync(
-            outputPath,
-            extractedText,
-            new UTF8Encoding(false),
-            cancellationToken);
+await SafeOutputService.WriteTextAsync(
+    inputPath,
+    outputPath,
+    extractedText,
+    new UTF8Encoding(false),
+    cancellationToken);
     }
 
     public static async Task ConvertTextToPdfAsync(
@@ -106,6 +112,11 @@ public static class DocumentConversionService
     string outputPath,
     CancellationToken cancellationToken = default)
 {
+    
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+    
     ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
     ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -279,10 +290,11 @@ public static class DocumentConversionService
         },
         cancellationToken);
 
-    await File.WriteAllBytesAsync(
-        outputPath,
-        pdfBytes,
-        cancellationToken);
+await SafeOutputService.WriteBytesAsync(
+    inputPath,
+    outputPath,
+    pdfBytes,
+    cancellationToken);
 }
 
 public static async Task ConvertDocxToTextAsync(
@@ -290,6 +302,11 @@ public static async Task ConvertDocxToTextAsync(
     string outputPath,
     CancellationToken cancellationToken = default)
 {
+    
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+    
     ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
     ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -316,6 +333,10 @@ public static async Task ConvertDocxToTextAsync(
     string extractedText = await Task.Run(
         () =>
         {
+            ArchiveSecurityService.ValidateArchive(
+                inputPath,
+                cancellationToken);
+
             using WordprocessingDocument document =
                 WordprocessingDocument.Open(inputPath, false);
 
@@ -376,11 +397,11 @@ public static async Task ConvertDocxToTextAsync(
         },
         cancellationToken);
 
-    await File.WriteAllTextAsync(
-        outputPath,
-        extractedText,
-        new UTF8Encoding(false),
-        cancellationToken);
-}
-
+await SafeOutputService.WriteTextAsync(
+    inputPath,
+    outputPath,
+    extractedText,
+    new UTF8Encoding(false),
+    cancellationToken);
+    }
 }

@@ -12,6 +12,10 @@ public static class PdfMetadataService
         string outputPath,
         CancellationToken cancellationToken = default)
     {
+        FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+        
         inputPath = Path.GetFullPath(inputPath);
         outputPath = Path.GetFullPath(outputPath);
 
@@ -169,10 +173,11 @@ public static class PdfMetadataService
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            File.Move(
-                temporaryOutput,
-                outputPath,
-                overwrite: true);
+await SafeOutputService.CopyFileAsync(
+    inputPath,
+    temporaryOutput,
+    outputPath,
+    cancellationToken);
         }
         finally
         {

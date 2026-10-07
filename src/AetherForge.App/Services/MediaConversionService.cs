@@ -13,6 +13,10 @@ public static class MediaConversionService
         ValidateInputFile(inputPath);
         ValidateOutputPath(outputPath);
 
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
+
         string inputExtension =
             Path.GetExtension(inputPath);
 
@@ -45,9 +49,11 @@ public static class MediaConversionService
             outputPath
         ];
 
-        await FFmpegService.RunFFmpegAsync(
-            arguments,
-            cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
     }
 
     public static async Task ExtractAudioAsync(
@@ -57,6 +63,10 @@ public static class MediaConversionService
     {
         ValidateInputFile(inputPath);
         ValidateOutputPath(outputPath);
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
 
         string outputExtension =
             Path.GetExtension(outputPath)
@@ -98,9 +108,11 @@ public static class MediaConversionService
             outputPath
         ];
 
-        await FFmpegService.RunFFmpegAsync(
-            arguments,
-            cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
     }
 
     public static async Task RemoveAudioAsync(
@@ -110,6 +122,10 @@ public static class MediaConversionService
     {
         ValidateInputFile(inputPath);
         ValidateOutputPath(outputPath);
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
 
         List<string> arguments =
         [
@@ -131,9 +147,11 @@ public static class MediaConversionService
             outputPath
         ];
 
-        await FFmpegService.RunFFmpegAsync(
-            arguments,
-            cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
     }
 
     public static async Task RemoveMetadataAsync(
@@ -143,6 +161,10 @@ public static class MediaConversionService
     {
         ValidateInputFile(inputPath);
         ValidateOutputPath(outputPath);
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
 
         List<string> arguments =
         [
@@ -165,9 +187,11 @@ public static class MediaConversionService
             outputPath
         ];
 
-        await FFmpegService.RunFFmpegAsync(
-            arguments,
-            cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
     }
 
     public static async Task CreateGifAsync(
@@ -177,6 +201,10 @@ public static class MediaConversionService
     {
         ValidateInputFile(inputPath);
         ValidateOutputPath(outputPath);
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
 
         string outputExtension =
             Path.GetExtension(outputPath)
@@ -207,9 +235,11 @@ public static class MediaConversionService
             outputPath
         ];
 
-        await FFmpegService.RunFFmpegAsync(
-            arguments,
-            cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
     }
 
 
@@ -220,6 +250,10 @@ public static async Task ConvertAudioAsync(
 {
     ValidateInputFile(inputPath);
     ValidateOutputPath(outputPath);
+
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
 
     string outputExtension =
         Path.GetExtension(outputPath)
@@ -258,9 +292,11 @@ public static async Task ConvertAudioAsync(
         outputPath
     ];
 
-    await FFmpegService.RunFFmpegAsync(
-        arguments,
-        cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
 }
 
 
@@ -272,6 +308,10 @@ public static async Task ChangeAudioQualityAsync(
 {
     ValidateInputFile(inputPath);
     ValidateOutputPath(outputPath);
+
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
 
     int[] supportedBitrates =
     [
@@ -332,12 +372,92 @@ public static async Task ChangeAudioQualityAsync(
         outputPath
     ];
 
-    await FFmpegService.RunFFmpegAsync(
-        arguments,
-        cancellationToken: cancellationToken);
+await RunSafelyAsync(
+    arguments,
+    inputPath,
+    outputPath,
+    cancellationToken);
 }
 
+    private static async Task RunSafelyAsync(
+    List<string> arguments,
+    string inputPath,
+    string outputPath,
+    CancellationToken cancellationToken)
+{
+    cancellationToken.ThrowIfCancellationRequested();
 
+    inputPath = Path.GetFullPath(inputPath);
+    outputPath = Path.GetFullPath(outputPath);
+
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+
+    string directory = Path.GetDirectoryName(outputPath)!;
+
+    string temporaryPath = Path.Combine(
+        directory,
+        ".aetherforge-" +
+        Guid.NewGuid().ToString("N") +
+        Path.GetExtension(outputPath));
+
+    List<string> safeArguments = [.. arguments];
+
+    // Nei sette metodi il percorso di uscita è l'ultimo argomento.
+    if (safeArguments.Count == 0 ||
+        !string.Equals(
+            Path.GetFullPath(safeArguments[^1]),
+            outputPath,
+            StringComparison.OrdinalIgnoreCase))
+    {
+        throw new InvalidOperationException(
+            LanguageService.Get("InvalidMediaOutput"));
+    }
+
+    safeArguments[^1] = temporaryPath;
+
+    try
+    {
+        await FFmpegService.RunFFmpegAsync(
+            safeArguments,
+            cancellationToken: cancellationToken);
+
+        if (!File.Exists(temporaryPath) ||
+            new FileInfo(temporaryPath).Length == 0)
+        {
+            throw new InvalidDataException(
+                LanguageService.Get("InvalidMediaOutput"));
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        FileSafetyService.EnsureDifferentFile(
+            inputPath,
+            outputPath);
+
+        File.Move(
+            temporaryPath,
+            outputPath,
+            overwrite: true);
+    }
+    finally
+    {
+        try
+        {
+            if (File.Exists(temporaryPath))
+            {
+                File.Delete(temporaryPath);
+            }
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
+}
 
     private static void ValidateInputFile(
         string inputPath)

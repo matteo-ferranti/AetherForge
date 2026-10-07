@@ -64,6 +64,10 @@ public static class SpreadsheetConversionService
             return await Task.Run(
                 () =>
                 {
+                    ArchiveSecurityService.ValidateArchive(
+                        readablePath,
+                        cancellationToken);
+
                     using SpreadsheetDocument document =
                         SpreadsheetDocument.Open(
                             readablePath,

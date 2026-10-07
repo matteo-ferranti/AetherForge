@@ -19,6 +19,10 @@ public static class DocumentMetadataService
         string outputPath,
         CancellationToken cancellationToken = default)
     {
+        FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+        
         ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
 
@@ -85,6 +89,10 @@ public static class DocumentMetadataService
                         inputPath,
                         temporaryPath,
                         overwrite: false);
+
+                    ArchiveSecurityService.ValidateArchive(
+                        temporaryPath,
+                        cancellationToken);
 
                         if (inputExtension is ".odt" or ".ods" or ".odp")
                             {
@@ -169,10 +177,11 @@ public static class DocumentMetadataService
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            File.Move(
+            await SafeOutputService.CopyFileAsync(
+                inputPath,
                 temporaryPath,
                 outputPath,
-                overwrite: true);
+                cancellationToken);
         }
         finally
         {

@@ -6,6 +6,8 @@ public static class LanguageService
 {
     private static readonly Dictionary<string, string> English = new()
     {
+        ["AboutButtonTooltip"] = "About and licenses",
+
         ["DragFilesText"] = "Drag your files here",
         ["OrText"] = "or",
         ["SelectFilesText"] = "Select files",
@@ -228,10 +230,68 @@ public static class LanguageService
         ["ErrorDetailsLimited"] =
             "Only the first 10 errors are shown.",
 
+        ["AboutDialogTitle"] = "About and licenses",
+        ["AboutVersionText"] = "Version {0}",
+        ["AboutDescription"] =
+            " is an all-in-one application for securely converting " +
+            "and processing images, audio, video, and documents.",
+        ["AboutRepositoryText"] = "View project on GitHub",
+        ["AboutCloseText"] = "Close",
+        ["AboutRepositoryError"] =
+            "Unable to open the browser. Please try again.",
+
+        ["AboutInformationTab"] = "Information",
+        ["AboutLicensesTab"] = "Third-party components",
+        ["AboutAppLicenseTab"] = "AetherForge license",
+
+        ["AboutAppLicenseExplanation"] =
+            "AetherForge's original code is distributed under the MIT License. " +
+            "You may use, modify, and redistribute it, including for commercial " +
+            "purposes, provided that the copyright notice and license are " +
+            "included in copies or substantial portions of the software.\n\n" +
+            "Third-party components retain their respective licenses. " +
+            "The official MIT License text is reproduced below in English.",
+        ["AboutLicensesExplanation"] =
+            "Select a component to read its license and notices. " +
+            "Official legal texts are shown in their original language.",
+        ["AboutLicenseReadError"] =
+            "Unable to read this license file. Reinstall the application.",
+        ["AboutFeaturesHeading"] = "Key features:",
+
+        ["AboutConversionHeading"] = "Universal conversion: ",
+        ["AboutConversionBody"] =
+            "Convert media files and documents between formats " +
+            "in just a few clicks.",
+
+        ["AboutEditingHeading"] = "Editing and optimization: ",
+        ["AboutEditingBody"] =
+            "Trim content, adjust media quality, and create GIFs.",
+
+        ["AboutPdfHeading"] = "PDF management: ",
+        ["AboutPdfBody"] =
+            "Quickly merge documents or extract individual pages.",
+
+        ["AboutPrivacyHeading"] = "Built-in privacy: ",
+        ["AboutPrivacyBody"] =
+            "Remove metadata from supported files. " +
+            "Processing takes place locally on your computer, " +
+            "without uploading files to online conversion services.",
+
+        ["AboutFooter"] =
+            "Available in Italian and English, it includes all " +
+            "the components needed to run, " +
+            "with no additional installations required.",
+
+        ["AboutWebsiteText"] = "Visit website",
+        ["AboutWebsiteError"] =
+            "Unable to open the website. Please try again.",
+
     };
 
     private static readonly Dictionary<string, string> Italian = new()
     {
+        ["AboutButtonTooltip"] = "Informazioni e licenze",
+        
         ["DragFilesText"] = "Trascina qui i tuoi file",
         ["OrText"] = "oppure",
         ["SelectFilesText"] = "Seleziona file",
@@ -450,6 +510,62 @@ public static class LanguageService
 
         ["ErrorDetailsLimited"] =
             "Sono mostrati soltanto i primi 10 errori.",
+
+        ["AboutDialogTitle"] = "Informazioni e licenze",
+        ["AboutVersionText"] = "Versione {0}",
+        ["AboutDescription"] =
+            " è un'applicazione all-in-one per la conversione e " +
+            "l'elaborazione sicura di immagini, audio, video e documenti.",
+        ["AboutRepositoryText"] = "Visualizza il progetto su GitHub",
+        ["AboutCloseText"] = "Chiudi",
+        ["AboutRepositoryError"] =
+            "Impossibile aprire il browser. Riprova.",
+
+        ["AboutInformationTab"] = "Informazioni",
+        ["AboutLicensesTab"] = "Componenti di terze parti",
+        ["AboutAppLicenseTab"] = "Licenza AetherForge",
+
+        ["AboutAppLicenseExplanation"] =
+            "Il codice originale di AetherForge è distribuito con licenza MIT. " +
+            "Puoi utilizzarlo, modificarlo e redistribuirlo, anche per scopi " +
+            "commerciali, mantenendo l'avviso di copyright e la licenza " +
+            "nelle copie o nelle parti sostanziali del software.\n\n" +
+            "I componenti di terze parti mantengono le rispettive licenze. " +
+            "Il testo ufficiale della licenza MIT è riportato di seguito in inglese.",
+        ["AboutLicensesExplanation"] =
+            "Seleziona un componente per leggere la licenza e gli avvisi. " +
+            "I testi legali ufficiali sono mostrati nella lingua originale.",
+        ["AboutLicenseReadError"] =
+            "Impossibile leggere questo file di licenza. Reinstalla l'applicazione.",
+
+        ["AboutFeaturesHeading"] = "Caratteristiche principali:",
+
+        ["AboutConversionHeading"] = "Conversione universale: ",
+        ["AboutConversionBody"] =
+            "Cambia formato a file multimediali e documenti in pochi clic.",
+
+        ["AboutEditingHeading"] = "Editing e ottimizzazione: ",
+        ["AboutEditingBody"] =
+            "Ritaglia contenuti, regola la qualità dei media e crea GIF.",
+
+        ["AboutPdfHeading"] = "Gestione PDF: ",
+        ["AboutPdfBody"] =
+            "Unisci documenti o estrai singole pagine in modo rapido.",
+
+        ["AboutPrivacyHeading"] = "Privacy nativa: ",
+        ["AboutPrivacyBody"] =
+            "Rimuovi i metadati dai file supportati. " +
+            "L'elaborazione avviene localmente sul tuo computer, " +
+            "senza caricare i file su servizi di conversione online.",
+
+        ["AboutFooter"] =
+            "Disponibile in italiano e inglese, include già tutti " +
+            "i componenti necessari per il funzionamento, " +
+            "senza richiedere installazioni esterne.",
+
+        ["AboutWebsiteText"] = "Visita il sito web",
+        ["AboutWebsiteError"] =
+            "Impossibile aprire il sito web. Riprova.",
 
     };
 

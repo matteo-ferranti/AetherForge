@@ -90,6 +90,28 @@
 
 </StackPanel>
 
+<!-- Informazioni e licenze -->
+<Button x:Name="AboutButton"
+        Grid.Row="0"
+        Width="40"
+        Height="40"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Top"
+        Panel.ZIndex="10"
+        Background="{StaticResource PanelBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        BorderBrush="{StaticResource BronzeLightBrush}"
+        BorderThickness="1"
+        Cursor="Hand"
+        Click="AboutButton_Click">
+
+    <TextBlock Text="ⓘ"
+               FontFamily="Segoe UI Symbol"
+               FontSize="24"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
+</Button>
+
         <!-- Logo -->
         <Image
             Grid.Row="0"

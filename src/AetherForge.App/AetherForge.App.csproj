@@ -68,4 +68,19 @@
   </None>
 </ItemGroup>
 
+<ItemGroup>
+  <None Update="Assets\Licenses\**\*.txt">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+
+<ItemGroup>
+  <None Include="..\..\LICENSE">
+    <Link>Assets\Licenses\AetherForge-LICENSE.txt</Link>
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+
 </Project>

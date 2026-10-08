@@ -299,6 +299,13 @@ private void OpenResult(
 
     {
 
+        AboutButton.ToolTip =
+            LanguageService.Get("AboutButtonTooltip");
+
+        System.Windows.Automation.AutomationProperties.SetName(
+            AboutButton,
+            LanguageService.Get("AboutButtonTooltip"));
+        
         DragFilesTextBlock.Text =
 
             LanguageService.Get("DragFilesText");
@@ -808,6 +815,19 @@ if (_loadedFiles.Any(file =>
         }
 
       return false;
+    }
+
+
+    private void AboutButton_Click(
+    object sender,
+    RoutedEventArgs e)
+    {
+        AboutDialog dialog = new()
+        {
+            Owner = this
+        };
+
+        dialog.ShowDialog();
     }
 
     // ---------------------------------------------------------

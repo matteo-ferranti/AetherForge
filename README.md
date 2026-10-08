@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://aetherforgeconverter.pages.dev/en/">Website</a> ·
-  <a href="https://github.com/matteo-ferranti/AetherForge/releases">Releases</a> ·
-  <a href="https://github.com/matteo-ferranti/AetherForge/issues">Report an issue</a> ·
+  <a href="https://aetherforgeconverter.pages.dev/en/" target="_blank" rel="noopener noreferrer">Website</a> ·
+  <a href="https://github.com/matteo-ferranti/AetherForge/releases" target="_blank" rel="noopener noreferrer">Releases</a> ·
+  <a href="https://github.com/matteo-ferranti/AetherForge/issues" target="_blank" rel="noopener noreferrer">Report an issue</a> ·
   <a href="README.it.md">Italiano</a>
 </p>
 

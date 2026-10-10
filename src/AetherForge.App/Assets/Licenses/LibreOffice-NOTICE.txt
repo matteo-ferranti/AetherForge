@@ -61,3 +61,52 @@ ____
 This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 
+======================================================================
+Source availability information added by AetherForge
+Informazioni sui sorgenti aggiunte da AetherForge
+======================================================================
+
+AetherForge redistributes the LibreOffice 26.8.0.3 files without modifying
+their code. LibreOffice and its bundled components retain their own
+licenses. See LibreOffice-LICENSE.txt and the original license files
+included in Tools/LibreOffice.
+
+The Source Code Form of LibreOffice 26.8.0.3 is available free of charge
+from The Document Foundation. No source download is required to use
+AetherForge.
+
+I sorgenti di LibreOffice 26.8.0.3 sono disponibili gratuitamente presso
+The Document Foundation. Non occorre scaricarli per usare AetherForge.
+
+Release source directory / Cartella dei sorgenti della versione:
+https://download.documentfoundation.org/libreoffice/src/26.8.0/
+
+Core source, including build scripts / Sorgenti principali:
+https://download.documentfoundation.org/libreoffice/src/26.8.0/libreoffice-26.8.0.3.tar.xz
+
+Dictionaries / Dizionari:
+https://download.documentfoundation.org/libreoffice/src/26.8.0/libreoffice-dictionaries-26.8.0.3.tar.xz
+
+Translations / Traduzioni:
+https://download.documentfoundation.org/libreoffice/src/26.8.0/libreoffice-translations-26.8.0.3.tar.xz
+
+External dependencies / Dipendenze esterne:
+The version-specific source tree contains download.lst, Makefile.fetch
+and external/ with the dependency versions, checksums, download rules
+and patches. The make fetch target retrieves the dependencies selected
+by the build configuration from the locations specified in that tree.
+
+L'albero sorgente della versione contiene download.lst, Makefile.fetch
+ed external/ con versioni, checksum, regole di download e patch. Il
+comando make fetch recupera le dipendenze scelte dalla configurazione.
+
+Version-specific source tree / Albero sorgente della versione:
+https://github.com/LibreOffice/core/tree/libreoffice-26.8.0.3
+Dependency manifest / Elenco delle dipendenze:
+https://raw.githubusercontent.com/LibreOffice/core/libreoffice-26.8.0.3/download.lst
+External source archives / Archivi sorgente esterni:
+https://dev-www.libreoffice.org/src/
+https://dev-www.libreoffice.org/extern/
+
+Source availability does not change the licenses of any component.
+La disponibilita dei sorgenti non modifica le licenze dei componenti.

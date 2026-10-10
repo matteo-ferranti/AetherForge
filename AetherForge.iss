@@ -29,6 +29,8 @@ LicenseFile=artifacts\release\win-x64\Assets\Licenses\AetherForge-LICENSE.txt
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern dynamic
+LanguageDetectionMethod=none
+UsePreviousLanguage=no
 
 DisableProgramGroupPage=yes
 CloseApplications=yes

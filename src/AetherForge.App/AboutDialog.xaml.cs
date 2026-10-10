@@ -108,7 +108,10 @@ catch (Exception ex) when (
         {
             new(
                 "FFmpeg / FFprobe 9.0.2",
-                ["FFmpeg-GPLv3-LICENSE.txt"]),
+                [
+                    "FFmpeg-GPLv3-LICENSE.txt",
+                    "FFmpeg-README.txt"
+                ]),
 
             new(
                 "LibreOffice 26.8.0.3",
@@ -122,6 +125,14 @@ catch (Exception ex) when (
                 [
                     "Magick.NET-LICENSE.txt",
                     "Magick.NET-NOTICE.txt"
+                ]),
+
+            new(
+                "Microsoft .NET / WPF 10.0.12",
+                [
+                    "DotNET-Runtime-LICENSE.txt",
+                    "DotNET-Runtime-NOTICE.txt",
+                    "DotNET-WPF-LICENSE.txt"
                 ]),
 
             new(

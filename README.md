@@ -75,11 +75,11 @@ These lists do not imply that every format can be converted to every other forma
 
 **Target platform:** Windows 11 on an Intel or AMD x64 processor.
 
-For packaged releases:
+[**Download AetherForge 1.0.0 — Windows x64 installer**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
 
-1. Download the installer from [GitHub Releases](https://github.com/matteo-ferranti/AetherForge/releases).
-2. Run `AetherForge-Setup-<version>-win-x64.exe`.
-3. Select English or Italian and follow the installation steps.
+1. Download the installer using the link above.
+2. Run `AetherForge-Setup-1.0.0-win-x64.exe`.
+3. Select English or Italian and follow the installation steps. English is selected by default.
 4. Open AetherForge from the Start menu or the optional desktop shortcut.
 
 Installation is per user and does not request administrator privileges. No separate .NET, FFmpeg, LibreOffice, or qpdf installation is required.
@@ -87,6 +87,8 @@ Installation is per user and does not request administrator privileges. No separ
 To uninstall, use **Settings → Apps → Installed apps → AetherForge**.
 
 The current installer targets Windows 11 x64. Windows 10 and ARM compatibility have not been verified.
+
+[FFmpeg sources and build scripts](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-FFmpeg-Sources-20261009.zip) are provided separately and are not required to use the application.
 
 ## Getting started
 

@@ -75,11 +75,11 @@ Questi elenchi non indicano che ogni formato possa essere convertito in tutti gl
 
 **Piattaforma di destinazione:** Windows 11 con processore Intel o AMD x64.
 
-Per le versioni distribuite tramite installer:
+[**Scarica AetherForge 1.0.0 — Installer Windows x64**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
 
-1. Scarica l'installer dalla pagina [GitHub Releases](https://github.com/matteo-ferranti/AetherForge/releases).
-2. Avvia `AetherForge-Setup-<versione>-win-x64.exe`.
-3. Seleziona italiano o inglese e segui la procedura.
+1. Scarica l'installer tramite il collegamento sopra.
+2. Avvia `AetherForge-Setup-1.0.0-win-x64.exe`.
+3. Seleziona italiano o inglese e segui la procedura. L'inglese è selezionato per impostazione predefinita.
 4. Apri AetherForge dal menu Start o dal collegamento desktop facoltativo.
 
 L'installazione riguarda l'utente corrente e non richiede privilegi di amministratore. Non occorre installare separatamente .NET, FFmpeg, LibreOffice o qpdf.
@@ -87,6 +87,8 @@ L'installazione riguarda l'utente corrente e non richiede privilegi di amministr
 Per disinstallare, usa **Impostazioni → App → App installate → AetherForge**.
 
 L'installer attuale è destinato a Windows 11 x64. La compatibilità con Windows 10 e ARM non è stata verificata.
+
+I [sorgenti e gli script di compilazione di FFmpeg](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-FFmpeg-Sources-20261009.zip) sono disponibili separatamente e non servono per utilizzare l'applicazione.
 
 ## Primi passi
 

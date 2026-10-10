@@ -114,7 +114,7 @@ These checks do not constitute a complete sandbox or a guarantee that every inpu
 
 ## Release validation
 
-The published application and installer have passed conversion, installation, and uninstallation checks on the development computer. Testing on a clean Windows installation is pending.
+The published application and installer have passed conversion, installation, and uninstallation checks on the development computer. The application was also tested successfully on a clean Windows 11 installation.
 
 ## Building from source
 

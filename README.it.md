@@ -114,7 +114,7 @@ Questi controlli non costituiscono una sandbox completa né garantiscono la sicu
 
 ## Verifica del rilascio
 
-L'applicazione pubblicata e l'installer hanno superato le prove di conversione, installazione e disinstallazione sul computer di sviluppo. La prova su un'installazione pulita di Windows è ancora da effettuare.
+L'applicazione pubblicata e l'installer hanno superato le prove di conversione, installazione e disinstallazione sul computer di sviluppo. L'applicazione è stata provata con successo anche su un'installazione pulita di Windows 11.
 
 ## Compilazione dal codice sorgente
 

@@ -1,5 +1,5 @@
 #define AppName "AetherForge"
-#define AppVersion "1.0.0"
+#define AppVersion "1.1.0"
 #define AppPublisher "Matteo Ferranti"
 #define AppExeName "AetherForge.App.exe"
 
@@ -8,9 +8,9 @@ AppId=MatteoFerranti.AetherForge
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
-AppPublisherURL=https://aetherforgeconverter.pages.dev/en/
+AppPublisherURL=https://flameswornstudio.com/en/
 AppSupportURL=https://github.com/matteo-ferranti/AetherForge
-AppUpdatesURL=https://aetherforgeconverter.pages.dev/en/
+AppUpdatesURL=https://flameswornstudio.com/aetherforgeconverter/en/
 
 DefaultDirName={localappdata}\Programs\AetherForge
 PrivilegesRequired=lowest

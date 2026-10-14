@@ -56,7 +56,7 @@ catch (Exception ex) when (
 
         string version =
             typeof(App).Assembly.GetName().Version?.ToString(3)
-            ?? "1.0.0";
+            ?? "1.1.0";
 
         VersionTextBlock.Text = string.Format(
             LanguageService.Get("AboutVersionText"),
@@ -98,8 +98,11 @@ catch (Exception ex) when (
         RepositoryButton.Content =
             LanguageService.Get("AboutRepositoryText");
 
-        WebsiteButton.Content =
+        WebsiteButtonText.Text =
             LanguageService.Get("AboutWebsiteText");
+
+        SupportButtonText.Text =
+            LanguageService.Get("AboutSupportText");
 
         CloseButton.Content =
             LanguageService.Get("AboutCloseText");
@@ -146,6 +149,43 @@ catch (Exception ex) when (
             new(
                 "PdfPig 0.1.14",
                 ["PdfPig-LICENSE.txt"]),
+            
+            new(
+                "PDFtoImage 5.4.0",
+                ["PDFtoImage-LICENSE.txt"]),
+
+            new(
+                "SkiaSharp 4.150.1",
+                [
+                    "SkiaSharp-LICENSE.txt",
+                    "SkiaSharp-NOTICE.txt"
+                ]),
+
+            new(
+                "PDFium 152.0.7961",
+                [
+                    "PDFium-Binaries-LICENSE.txt",
+                    "PDFium-NOTICE.txt"
+                ]),
+
+            new(
+                "Tesseract OCR / TesseractOCR 5.5.2",
+                [
+                    "Tesseract-LICENSE.txt",
+                    "Tesseract-NOTICE.txt",
+                    "Tesseract-tessdata-LICENSE.txt"
+                ]),
+
+            new(
+                "Leptonica 1.85.0",
+                [
+                    "Leptonica-LICENSE.txt",
+                    "Leptonica-NOTICE.txt"
+                ]),
+
+            new(
+                "Microsoft Visual C++ Runtime 14.44.35211",
+                ["VisualCpp-Runtime-LICENSE.txt"]),    
 
             new(
                 "qpdf 12.4.2",
@@ -205,6 +245,30 @@ catch (Exception ex) when (
     }
 
 
+    private void SupportButton_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    try
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "https://ko-fi.com/flameswornstudio",
+            UseShellExecute = true
+        });
+    }
+    catch (Exception ex) when (
+        ex is Win32Exception or InvalidOperationException)
+    {
+        MessageBox.Show(
+            this,
+            LanguageService.Get("AboutSupportError"),
+            LanguageService.Get("AboutDialogTitle"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
+    }
+}
+
     private void WebsiteButton_Click(
     object sender,
     RoutedEventArgs e)
@@ -214,8 +278,8 @@ catch (Exception ex) when (
         Process.Start(new ProcessStartInfo
         {
             FileName = LanguageService.CurrentLanguage == "it"
-            ? "https://aetherforgeconverter.pages.dev/it/"
-            : "https://aetherforgeconverter.pages.dev/en/",
+            ? "https://flameswornstudio.com/aetherforgeconverter/it/"
+            : "https://flameswornstudio.com/aetherforgeconverter/en/",
             UseShellExecute = true
         });
     }

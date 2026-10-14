@@ -102,19 +102,61 @@
 
                         </StackPanel>
 
-<WrapPanel Orientation="Horizontal">
-    <Button x:Name="RepositoryButton"
-            Padding="14,8"
-            Margin="0,0,12,8"
-            Cursor="Hand"
-            Click="RepositoryButton_Click"/>
+<Grid Margin="0,0,0,8">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
 
-    <Button x:Name="WebsiteButton"
+    <StackPanel Grid.Column="0"
+                Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="0,0,20,0">
+
+        <Button x:Name="RepositoryButton"
+                Padding="14,8"
+                Margin="0,0,12,0"
+                Cursor="Hand"
+                Click="RepositoryButton_Click"/>
+
+        <Button x:Name="WebsiteButton"
+                Padding="14,8"
+                Cursor="Hand"
+                Click="WebsiteButton_Click">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Assets/Logos/flamesworn_icon.png"
+                       Width="24"
+                       Height="24"
+                       Stretch="Uniform"
+                       Margin="0,0,8,0"
+                       VerticalAlignment="Center"/>
+                <TextBlock x:Name="WebsiteButtonText"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+    </StackPanel>
+
+    <Button x:Name="SupportButton"
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
             Padding="14,8"
-            Margin="0,0,0,8"
             Cursor="Hand"
-            Click="WebsiteButton_Click"/>
-</WrapPanel>
+            Click="SupportButton_Click">
+
+        <StackPanel Orientation="Horizontal">
+            <Image Source="Assets/Logos/kofi_cup.png"
+                   Width="28"
+                   Height="24"
+                   Stretch="Uniform"
+                   Margin="0,0,8,0"
+                   VerticalAlignment="Center"/>
+
+            <TextBlock x:Name="SupportButtonText"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+    </Button>
+</Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

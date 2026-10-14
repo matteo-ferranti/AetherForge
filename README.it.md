@@ -9,8 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="https://aetherforgeconverter.pages.dev/it/">Sito web</a> ·
+  <a href="https://flameswornstudio.com/aetherforgeconverter/it/">Sito web</a> ·
   <a href="https://github.com/matteo-ferranti/AetherForge/releases">Release</a> ·
+  <a href="CHANGELOG.it.md">Changelog</a> ·
+  <a href="https://ko-fi.com/flameswornstudio">Sostieni il progetto</a> ·
   <a href="https://github.com/matteo-ferranti/AetherForge/issues">Segnala un problema</a> ·
   <a href="README.md">English</a>
 </p>
@@ -23,22 +25,36 @@ AetherForge riunisce la conversione dei file e strumenti pratici di modifica in 
 
 L'elaborazione avviene localmente sul computer. Non è necessario caricare i file su un servizio di conversione online. L'installer include il runtime .NET e i componenti utilizzati dall'applicazione per elaborare i file.
 
+## Ultimo aggiornamento — 1.1.0
+
+**Versione in sviluppo: 1.1.0 — non ancora pubblicata. Ultima release pubblicata: 1.0.0.**
+
+- OCR automatico in italiano e inglese per PDF → TXT sulle pagine prive di testo estraibile, anche nei PDF misti.
+- Immagini → PDF, con esportazione separata o unione in un unico PDF e controlli per ordinare e rimuovere le immagini.
+- PDF → PNG/JPG, con esportazione di una pagina o di un intervallo consecutivo in una cartella dedicata.
+- Menu con freccetta per applicare un'operazione o un formato di output a tutti i file compatibili in attesa.
+- Nuova identità FlameSworn Studio, collegamenti al sito in base alla lingua e pulsante per sostenere il progetto su Ko-fi.
+
+Lo **[storico completo delle versioni](CHANGELOG.it.md)** è disponibile nel changelog.
+
 ## Funzionalità
 
 | Categoria | Strumenti disponibili |
 | --- | --- |
-| Immagini | Conversione, ridimensionamento, rotazione, capovolgimento, regolazione della qualità e rimozione dei metadati per i formati supportati. |
+| Immagini | Conversione, ridimensionamento, rotazione, capovolgimento, regolazione della qualità, rimozione dei metadati per i formati supportati ed esportazione in PDF separati o in un unico documento ordinato. |
 | Audio | Conversione, ritaglio, regolazione del bitrate per i formati supportati e rimozione dei metadati. |
 | Video | Conversione, ritaglio, estrazione e rimozione dell'audio, creazione di GIF e rimozione dei metadati. |
-| Documenti di testo | Conversione tra i formati di testo e Office supportati, estrazione del testo dai PDF ed esportazione in PDF. |
+| Documenti di testo | Conversione tra i formati di testo e Office supportati, estrazione del testo dai PDF con OCR automatico italiano/inglese sulle pagine prive di testo estraibile ed esportazione in PDF. |
 | Fogli di calcolo | Conversione tra i formati supportati, esportazione in PDF e in CSV con selezione del foglio. I CSV in ingresso possono essere esportati in PDF. |
 | Presentazioni | Conversione tra PPT, PPTX e ODP ed esportazione in PDF. |
 | E-book | Conversione di EPUB in TXT e PDF. |
-| Strumenti PDF | Unione di file nell'ordine scelto ed estrazione di pagine o intervalli di pagine. |
+| Strumenti PDF | Unione di file nell'ordine scelto, estrazione di pagine o intervalli di pagine ed esportazione delle pagine in PNG/JPG. |
 
-L'elenco dei file offre inoltre trascinamento, scelta dell'operazione e del formato di output per ciascun file, stato dell'elaborazione e pulsanti per aprire i risultati completati o mostrarli nella cartella.
+L'elenco dei file offre inoltre trascinamento, scelta dell'operazione e del formato di output per ciascun file, stato dell'elaborazione e pulsanti per aprire i risultati completati o mostrarli nella cartella. Le freccette accanto ai selettori di operazione e formato permettono di applicare una scelta a tutti i file compatibili in attesa.
 
 ## Screenshot
+
+Gli screenshot mostrano la versione 1.0.0. La 1.1.0 aggiorna l'interfaccia e aggiunge gli strumenti elencati sopra.
 
 ### Finestra principale
 
@@ -62,7 +78,8 @@ Aggiungi i file PDF e scegli il loro ordine prima di unirli.
 
 | Categoria | Esempi di formati in ingresso | Formati di conversione in uscita |
 | --- | --- | --- |
-| Immagini | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | JPG, PNG, WebP, BMP, TIFF, AVIF |
+| Immagini | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | PDF, JPG, PNG, WebP, BMP, TIFF, AVIF |
+| PDF | PDF | TXT (con OCR automatico quando necessario), PNG, JPG |
 | Audio | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS, WMA, AIFF, AC3 | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS |
 | Video | MP4, MKV, AVI, MOV, WebM, WMV, FLV, MPEG, TS | MP4, MKV, MOV, WebM, AVI |
 | Documenti | PDF, TXT, DOC, DOCX, ODT, RTF, HTML, EPUB | I formati disponibili dipendono dal file in ingresso |
@@ -76,6 +93,8 @@ Questi elenchi non indicano che ogni formato possa essere convertito in tutti gl
 **Piattaforma di destinazione:** Windows 11 con processore Intel o AMD x64.
 
 [**Scarica AetherForge 1.0.0 — Installer Windows x64**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
+
+Questo download è la release 1.0.0 pubblicata. Le funzionalità della 1.1.0 descritte sopra sono attualmente disponibili nel codice sorgente; il nuovo installer non è ancora stato pubblicato.
 
 1. Scarica l'installer tramite il collegamento sopra.
 2. Avvia `AetherForge-Setup-1.0.0-win-x64.exe`.
@@ -94,11 +113,14 @@ I [sorgenti e gli script di compilazione di FFmpeg](https://github.com/matteo-fe
 
 1. Trascina i file nella finestra principale oppure usa **Seleziona file**.
 2. Scegli un'operazione e un formato di output disponibile per ciascun file.
+   Usa la freccetta accanto al selettore per applicare la scelta a tutti i file compatibili in attesa.
 3. Imposta le eventuali opzioni richieste dall'operazione.
 4. Avvia l'elaborazione e scegli dove salvare i risultati.
 5. Controlla lo stato dei file, poi apri il risultato o la cartella che lo contiene.
 
 L'unione PDF utilizza una finestra dedicata, in cui puoi aggiungere i file, modificarne l'ordine e scegliere la destinazione.
+
+Quando converti più immagini in PDF, scegli se esportarle separatamente o unirle in un unico documento, quindi imposta l'ordine. Per PDF → PNG/JPG, seleziona una pagina o un intervallo consecutivo; più pagine vengono esportate in una cartella dedicata. PDF → TXT utilizza automaticamente l'OCR sulle pagine prive di testo estraibile.
 
 ## Protezioni e limitazioni
 
@@ -106,7 +128,9 @@ AetherForge include controlli contro la sovrascrittura dei file in ingresso, scr
 
 Questi controlli non costituiscono una sandbox completa né garantiscono la sicurezza di qualsiasi file in ingresso.
 
-- **PDF → TXT non include OCR:** le pagine scansionate devono contenere un livello di testo per consentirne l'estrazione.
+- L'OCR riconosce localmente testi in italiano e inglese. Il risultato dipende dalla qualità della scansione; non garantisce un riconoscimento accurato della scrittura a mano né la conservazione di tabelle e impaginazione.
+- L'OCR automatico si attiva sulle pagine prive di testo estraibile. Un'immagine contenente testo su una pagina che ha anche un livello di testo estraibile non viene riconosciuta separatamente.
+- Immagini → PDF esporta il primo fotogramma delle GIF animate e la prima pagina dei TIFF multipagina.
 - La conversione di documenti Office e presentazioni può modificare impaginazione, font o funzioni specifiche dell'applicazione di origine.
 - Le operazioni e le impostazioni di qualità variano in base al formato.
 - La rimozione dei metadati è disponibile per i formati supportati e non equivale all'anonimizzazione completa del contenuto.
@@ -114,7 +138,9 @@ Questi controlli non costituiscono una sandbox completa né garantiscono la sicu
 
 ## Verifica del rilascio
 
-L'applicazione pubblicata e l'installer hanno superato le prove di conversione, installazione e disinstallazione sul computer di sviluppo. L'applicazione è stata provata con successo anche su un'installazione pulita di Windows 11.
+**1.0.0:** l'applicazione pubblicata e l'installer hanno superato le prove di conversione, installazione e disinstallazione sul computer di sviluppo. L'applicazione è stata provata con successo anche su un'installazione pulita di Windows 11.
+
+**1.1.0:** OCR, conversioni immagini/PDF e applicazione delle scelte a più file hanno superato le prove funzionali sul computer di sviluppo. L'OCR è stato verificato anche in una compilazione Release con runtime incluso. Restano da verificare il nuovo installer e i nuovi componenti su un'installazione pulita di Windows 11.
 
 ## Compilazione dal codice sorgente
 
@@ -130,11 +156,17 @@ tools/
 │   └── ffprobe.exe
 ├── libreoffice/
 │   └── program/soffice.com
-└── qpdf/
-    └── bin/qpdf.exe
+├── qpdf/
+│   └── bin/qpdf.exe
+└── vcruntime/
+    ├── msvcp140.dll
+    ├── vcruntime140.dll
+    └── vcruntime140_1.dll
 ```
 
 Sono necessarie le distribuzioni complete di LibreOffice e qpdf, con i relativi file di supporto, non soltanto gli eseguibili. Queste cartelle non sono incluse nel repository.
+
+NuGet ripristina PDFtoImage, PDFium, SkiaSharp e TesseractOCR, comprese le rispettive librerie native. I modelli OCR italiano e inglese si trovano in `src/AetherForge.App/Assets/OCR/tessdata` e vengono copiati nelle cartelle di compilazione e pubblicazione. Mantieni entrambi i file `eng.traineddata` e `ita.traineddata` insieme all'applicazione. Le DLL x64 del runtime Visual C++ in `tools/vcruntime` vengono copiate accanto all'eseguibile; la loro redistribuzione è soggetta ai [termini di licenza Microsoft](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files).
 
 Dalla cartella principale del repository:
 
@@ -159,6 +191,9 @@ AetherForge utilizza:
 - **FFmpeg e FFprobe** per l'elaborazione di audio e video.
 - **LibreOffice** per la conversione dei documenti Office.
 - **PdfPig** per l'estrazione del testo dai PDF.
+- **PDFtoImage / PDFium / SkiaSharp** per il rendering delle pagine PDF in immagini.
+- **TesseractOCR / Tesseract / Leptonica** con i modelli **tessdata_fast** italiano e inglese per l'OCR.
+- **Microsoft Visual C++ Runtime** per i componenti OCR nativi.
 - **Open XML SDK** per le operazioni supportate sui documenti Office.
 - **qpdf** per l'elaborazione dei PDF.
 - **Noto Sans** per il testo nei documenti generati.
@@ -169,11 +204,13 @@ I testi delle licenze e gli avvisi sono disponibili in `src/AetherForge.App/Asse
 
 ## Autore e attribuzione
 
-Realizzata da **Matteo Ferranti**.
+Realizzata da **Matteo Ferranti**, con il nome **[FlameSworn Studio](https://flameswornstudio.com/it/)**.
 
 Se utilizzi AetherForge o il suo codice nel tuo progetto, una citazione visibile dell'autore e un collegamento al repository sono apprezzati. Si tratta di una richiesta, non di una condizione aggiuntiva della licenza MIT.
 
 ## Segnalazioni e contributi
+
+Se vuoi sostenere lo sviluppo, visita **[FlameSworn Studio su Ko-fi](https://ko-fi.com/flameswornstudio)**.
 
 Suggerimenti, segnalazioni riproducibili e contributi sono benvenuti tramite [GitHub Issues](https://github.com/matteo-ferranti/AetherForge/issues) e pull request.
 

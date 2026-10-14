@@ -175,6 +175,33 @@ public partial class MainWindow : Window
 
     ];
 
+    private void StudioWebsiteButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = LanguageService.CurrentLanguage == "it"
+                    ? "https://flameswornstudio.com/it/"
+                    : "https://flameswornstudio.com/en/",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex) when (
+            ex is System.ComponentModel.Win32Exception
+                or InvalidOperationException)
+        {
+            MessageBox.Show(
+                this,
+                LanguageService.Get("AboutWebsiteError"),
+                LanguageService.Get("AboutDialogTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+    }
+
    private void OpenRowOutputButton_Click(
     object sender,
     RoutedEventArgs e)
@@ -213,7 +240,8 @@ private void OpenResult(
 
     string outputPath = file.OutputPath;
 
-    if (!File.Exists(outputPath))
+    if (!File.Exists(outputPath) &&
+    !Directory.Exists(outputPath))
     {
         MessageBox.Show(
             this,
@@ -266,6 +294,10 @@ private void OpenResult(
     {
 
         InitializeComponent();
+
+        string appVersion = typeof(App).Assembly.GetName()
+            .Version?.ToString(3) ?? "1.1.0";
+        FooterTextBlock.Text = $"v {appVersion}";
 
 
 
@@ -1316,7 +1348,43 @@ if (_loadedFiles.Any(file =>
 
         }
 
+        List<LoadedFile>? imagesForCombinedPdf = null;
 
+List<LoadedFile> imagePdfCandidates = filesToProcess
+    .Where(file =>
+        file.Category == "Image" &&
+        file.SelectedOperation?.Operation ==
+            ConversionOperation.Convert &&
+        file.SelectedOutputFormat == "PDF")
+    .ToList();
+
+if (imagePdfCandidates.Count >= 2)
+{
+    var exportDialog = new ImagePdfExportDialog(
+        imagePdfCandidates)
+    {
+        Owner = this
+    };
+
+    if (exportDialog.ShowDialog() != true)
+    {
+        return;
+    }
+
+    if (exportDialog.MergeIntoSinglePdf)
+    {
+        imagesForCombinedPdf =
+            exportDialog.SelectedImages.ToList();
+
+        LoadedFile firstImage = imagesForCombinedPdf[0];
+
+        // Il gruppo viene elaborato una sola volta.
+        // Le immagini escluse rimangono Pending nella lista principale.
+        filesToProcess.RemoveAll(file =>
+            imagePdfCandidates.Contains(file) &&
+            !ReferenceEquals(file, firstImage));
+    }
+}
 
         bool isBatch =
 
@@ -1406,6 +1474,73 @@ if (_loadedFiles.Any(file =>
 
 int? csvSheetIndex = null;
 
+int? pdfImagePageNumber = null;
+
+if (file.Category == "Document" &&
+    file.Format == "PDF" &&
+    (file.SelectedOutputFormat is "PNG" or "JPG"))
+{
+    string imageOutputFormat = file.SelectedOutputFormat;
+
+    int pageCount = await PdfImageService.GetPageCountAsync(
+        file.FullPath);
+
+    var pageDialog = new PdfPageSelectionDialog(
+        file.Name,
+        pageCount,
+        exportImages: true)
+    {
+        Owner = this
+    };
+
+    if (pageDialog.ShowDialog() != true)
+    {
+        continue;
+    }
+
+    if (pageDialog.FirstPage == pageDialog.LastPage)
+    {
+        pdfImagePageNumber = pageDialog.FirstPage;
+    }
+    else
+    {
+        string parentDirectory;
+
+        if (isBatch)
+        {
+            parentDirectory = batchOutputDirectory!;
+        }
+        else
+        {
+            OpenFolderDialog folderDialog = new()
+            {
+                Title = LanguageService.Get(
+                    "PdfImagesOutputFolderTitle")
+            };
+
+            if (folderDialog.ShowDialog() != true)
+            {
+                continue;
+            }
+
+            parentDirectory = folderDialog.FolderName;
+        }
+
+        string resultDirectory =
+            await PdfImageService.ConvertPdfPagesToImagesAsync(
+                file.FullPath,
+                parentDirectory,
+                imageOutputFormat,
+                pageDialog.FirstPage,
+                pageDialog.LastPage);
+
+        MarkFileCompleted(file, resultDirectory);
+        processedFiles++;
+
+        continue;
+    }
+}
+
 if (file.Category == "Document" &&
     (file.Format is "XLS" or "XLSX" or "ODS") &&
     file.SelectedOutputFormat == "CSV")
@@ -1464,7 +1599,19 @@ if (file.Category == "Document" &&
 if (file.Category == "Document")
 {
     if (file.Format == "PDF" &&
-        file.SelectedOutputFormat == "TXT")
+        (file.SelectedOutputFormat is "PNG" or "JPG"))
+    {
+        int selectedPage = pdfImagePageNumber
+            ?? throw new InvalidOperationException(
+                LanguageService.Get("PdfPageRangeInvalid"));
+
+        await PdfImageService.ConvertPdfPageToImageAsync(
+            file.FullPath,
+            outputPath,
+            selectedPage);
+    }
+    else if (file.Format == "PDF" &&
+             file.SelectedOutputFormat == "TXT")
     {
         await DocumentConversionService.ConvertPdfToTextAsync(
             file.FullPath,
@@ -1552,6 +1699,34 @@ else if (file.Category == "Audio")
                             else if (file.Category == "Video")
                             {
                                 await MediaConversionService.ConvertVideoAsync(
+                                    file.FullPath,
+                                    outputPath);
+                            }
+                            else if (file.Category == "Image" &&
+                                    file.SelectedOutputFormat == "PDF")
+                            {
+                                if (imagesForCombinedPdf is not null &&
+                                    ReferenceEquals(file, imagesForCombinedPdf[0]))
+                                {
+                                    string[] imagePaths = imagesForCombinedPdf
+                                        .Select(image => image.FullPath)
+                                        .ToArray();
+
+                                    await PdfImageService.ConvertImagesToPdfAsync(
+                                        imagePaths,
+                                        outputPath);
+
+                                    foreach (LoadedFile image in imagesForCombinedPdf)
+                                    {
+                                        MarkFileCompleted(image, outputPath);
+                                    }
+
+                                    processedFiles += imagesForCombinedPdf.Count;
+
+                                    continue;
+                                }
+
+                                await PdfImageService.ConvertImageToPdfAsync(
                                     file.FullPath,
                                     outputPath);
                             }
@@ -2180,21 +2355,30 @@ case ConversionOperation.ChangeQuality:
                 }
 
                 catch (Exception exception)
-                {
-                    file.Status = ConversionStatus.Error;
+{
+    IEnumerable<LoadedFile> affectedFiles =
+        imagesForCombinedPdf is not null &&
+        ReferenceEquals(file, imagesForCombinedPdf[0])
+            ? imagesForCombinedPdf
+            : new[] { file };
 
-                    file.StatusText = GetStatusText(
-                        ConversionStatus.Error);
+    foreach (LoadedFile affectedFile in affectedFiles)
+    {
+        affectedFile.Status = ConversionStatus.Error;
 
-                    failedFiles++;
+        affectedFile.StatusText = GetStatusText(
+            ConversionStatus.Error);
 
-                    if (errorDetails.Count < 10)
-                    {
-                        errorDetails.Add((
-                            Path.GetFileName(file.FullPath),
-                            exception));
-                    }
-                }
+        failedFiles++;
+
+        if (errorDetails.Count < 10)
+        {
+            errorDetails.Add((
+                Path.GetFileName(affectedFile.FullPath),
+                exception));
+        }
+    }
+}
             } // Chiude foreach
         } // Chiude try
         finally
@@ -2953,6 +3137,129 @@ case ConversionOperation.ChangeQuality:
 
 
 
+    private void OpenBulkSettingsMenu_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        e.Handled = true;
+
+        if (sender is not Button button ||
+            button.ContextMenu is not ContextMenu menu)
+        {
+            return;
+        }
+
+        menu.PlacementTarget = button;
+        menu.Placement =
+            System.Windows.Controls.Primitives.PlacementMode.Bottom;
+        menu.IsOpen = true;
+    }
+
+    private void BulkSettingsContextMenu_Opened(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not ContextMenu menu)
+        {
+            return;
+        }
+
+        bool appliesFormat = Equals(menu.Tag, "Format");
+
+        bool canApply =
+            !_isProcessing &&
+            menu.DataContext is LoadedFile source &&
+            source.Status == ConversionStatus.Pending &&
+            (appliesFormat
+                ? !string.IsNullOrWhiteSpace(source.SelectedOutputFormat)
+                : source.SelectedOperation is not null);
+
+        foreach (MenuItem item in menu.Items.OfType<MenuItem>())
+        {
+            item.Header = LanguageService.Get(
+                appliesFormat
+                    ? "ApplyOutputFormatToAll"
+                    : "ApplyOperationToAll");
+            item.IsEnabled = canApply;
+        }
+    }
+
+    private void ApplyOutputFormatToAll_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        e.Handled = true;
+
+        if (_isProcessing ||
+            sender is not MenuItem menuItem ||
+            menuItem.DataContext is not LoadedFile source ||
+            source.Status != ConversionStatus.Pending ||
+            string.IsNullOrWhiteSpace(source.SelectedOutputFormat))
+        {
+            return;
+        }
+
+        string outputFormat = source.SelectedOutputFormat;
+
+        foreach (LoadedFile file in _loadedFiles)
+        {
+            if (file.Status != ConversionStatus.Pending ||
+                !file.AvailableOutputFormats.Contains(outputFormat))
+            {
+                continue;
+            }
+
+            file.SelectedOutputFormat = outputFormat;
+        }
+
+        UpdateConvertButtonState();
+    }
+
+    private void ApplyOperationToAll_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        e.Handled = true;
+
+        if (_isProcessing ||
+            sender is not MenuItem menuItem ||
+            menuItem.DataContext is not LoadedFile source ||
+            source.Status != ConversionStatus.Pending ||
+            source.SelectedOperation is null)
+        {
+            return;
+        }
+
+        ConversionOperation operation =
+            source.SelectedOperation.Operation;
+
+        foreach (LoadedFile file in _loadedFiles)
+        {
+            if (file.Status != ConversionStatus.Pending)
+            {
+                continue;
+            }
+
+            OperationOption? matchingOperation =
+                file.AvailableOperations.FirstOrDefault(
+                    option => option.Operation == operation);
+
+            if (matchingOperation is null ||
+                ReferenceEquals(file.SelectedOperation, matchingOperation))
+            {
+                continue;
+            }
+
+            file.SelectedOperation = matchingOperation;
+            UpdateOutputFormatsForFile(file);
+        }
+
+        FilesDataGrid.Items.Refresh();
+        UpdateResizeColumnsVisibility();
+        UpdateQualityColumnVisibility();
+        UpdateConvertButtonState();
+    }
+
     private void OperationComboBox_SelectionChanged(
 
         object sender,
@@ -3002,6 +3309,8 @@ case ConversionOperation.ChangeQuality:
             return;
 
 
+
+        string? previousOutputFormat = file.SelectedOutputFormat;
 
         IEnumerable<string> formats =
 
@@ -3119,8 +3428,10 @@ case ConversionOperation.ChangeQuality:
 
 
         file.SelectedOutputFormat =
-
-            file.AvailableOutputFormats.FirstOrDefault();
+            previousOutputFormat is not null &&
+            file.AvailableOutputFormats.Contains(previousOutputFormat)
+                ? previousOutputFormat
+                : file.AvailableOutputFormats.FirstOrDefault();
 
     }
 
@@ -3164,7 +3475,9 @@ case ConversionOperation.ChangeQuality:
 
                     "TIFF",
 
-                    "AVIF"
+                    "AVIF",
+
+                    "PDF"
 
                 ],
 
@@ -3212,7 +3525,7 @@ case ConversionOperation.ChangeQuality:
 
                 "Document" => inputFormat switch
                 {
-                    "PDF" => new[] { "TXT" },
+                    "PDF" => new[] { "TXT", "PNG", "JPG" },
                     "EPUB" => new[] { "PDF", "TXT" },
                     "TXT" => new[] { "PDF", "DOCX", "ODT", "RTF" },
                     "DOCX" => new[] { "PDF", "TXT", "ODT", "RTF" },
@@ -3235,17 +3548,7 @@ case ConversionOperation.ChangeQuality:
             };
 
 
-        return formats.Where(
-
-            format =>
-
-                !string.Equals(
-
-                    format,
-
-                    inputFormat,
-
-                    StringComparison.OrdinalIgnoreCase));
+        return formats;
 
     }
 

@@ -15,97 +15,103 @@ namespace AetherForge.App.Services;
 
 public static class DocumentConversionService
 {
-    public static async Task ConvertPdfToTextAsync(
-        string inputPath,
-        string outputPath,
-        CancellationToken cancellationToken = default)
+public static async Task ConvertPdfToTextAsync(
+    string inputPath,
+    string outputPath,
+    CancellationToken cancellationToken = default)
+{
+    ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
+    ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
+
+    FileSafetyService.EnsureDifferentFile(
+        inputPath,
+        outputPath);
+
+    if (!File.Exists(inputPath))
     {
-
-        FileSafetyService.EnsureDifferentFile(
-            inputPath,
-            outputPath);
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
-
-        if (!File.Exists(inputPath))
-        {
-            throw new FileNotFoundException(
-                "Input PDF was not found.",
-                inputPath);
-        }
-
-        if (!string.Equals(
-                Path.GetExtension(inputPath),
-                ".pdf",
-                StringComparison.OrdinalIgnoreCase))
-        {
-            throw new NotSupportedException(
-                "Only PDF input is supported.");
-        }
-
-        if (!string.Equals(
-                Path.GetExtension(outputPath),
-                ".txt",
-                StringComparison.OrdinalIgnoreCase))
-        {
-            throw new NotSupportedException(
-                "Only TXT output is supported.");
-        }
-
-        string extractedText = await Task.Run(
-            () =>
-            {
-                using PdfDocument document =
-                    PdfDocument.Open(inputPath);
-
-                StringBuilder result = new();
-
-                foreach (var page in document.GetPages())
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    string pageText =
-                        ContentOrderTextExtractor.GetText(
-                            page,
-                            true);
-
-                            pageText = pageText
-                                .Replace("\uFB00", "ff")
-                                .Replace("\uFB01", "fi")
-                                .Replace("\uFB02", "fl")
-                                .Replace("\uFB03", "ffi")
-                                .Replace("\uFB04", "ffl");
-
-                    if (result.Length > 0)
-                    {
-                        result.AppendLine();
-                        result.AppendLine();
-                    }
-
-                    result.Append(pageText.Trim());
-                }
-
-                string text = result.ToString();
-
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    throw new InvalidOperationException(
-                        "No extractable text was found. " +
-                        "The PDF may require OCR.");
-                }
-
-                return text;
-            },
-            cancellationToken);
-
-await SafeOutputService.WriteTextAsync(
-    inputPath,
-    outputPath,
-    extractedText,
-    new UTF8Encoding(false),
-    cancellationToken);
+        throw new FileNotFoundException(
+            "Input PDF was not found.",
+            inputPath);
     }
+
+    if (!string.Equals(
+            Path.GetExtension(inputPath),
+            ".pdf",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        throw new NotSupportedException(
+            "Only PDF input is supported.");
+    }
+
+    if (!string.Equals(
+            Path.GetExtension(outputPath),
+            ".txt",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        throw new NotSupportedException(
+            "Only TXT output is supported.");
+    }
+
+    string extractedText = await Task.Run(
+        async () =>
+        {
+            using PdfDocument document =
+                PdfDocument.Open(inputPath);
+
+            StringBuilder result = new();
+
+            foreach (var page in document.GetPages())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                string pageText =
+                    ContentOrderTextExtractor.GetText(
+                        page,
+                        true);
+
+                if (string.IsNullOrWhiteSpace(pageText))
+                {
+                    pageText = await OcrService.RecognizePdfPageAsync(
+                        inputPath,
+                        page.Number,
+                        cancellationToken);
+                }
+
+                pageText = pageText
+                    .Replace("\uFB00", "ff")
+                    .Replace("\uFB01", "fi")
+                    .Replace("\uFB02", "fl")
+                    .Replace("\uFB03", "ffi")
+                    .Replace("\uFB04", "ffl");
+
+                if (result.Length > 0)
+                {
+                    result.AppendLine();
+                    result.AppendLine();
+                }
+
+                result.Append(pageText.Trim());
+            }
+
+            string text = result.ToString();
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                throw new InvalidOperationException(
+                    LanguageService.Get("OcrNoTextFound"));
+            }
+
+            return text;
+        },
+        cancellationToken);
+
+    await SafeOutputService.WriteTextAsync(
+        inputPath,
+        outputPath,
+        extractedText,
+        new UTF8Encoding(false),
+        cancellationToken);
+}
 
     public static async Task ConvertTextToPdfAsync(
     string inputPath,

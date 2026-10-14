@@ -1,0 +1,90 @@
+<Window x:Class="AetherForge.App.ImagePdfExportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="660"
+        Height="520"
+        MinWidth="580"
+        MinHeight="440"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <RadioButton x:Name="SeparateRadioButton"
+                     Grid.Row="0"
+                     GroupName="ExportMode"
+                     IsChecked="True"
+                     Margin="0,0,0,12"/>
+
+        <RadioButton x:Name="MergeRadioButton"
+                     Grid.Row="1"
+                     GroupName="ExportMode"
+                     Margin="0,0,0,16"/>
+
+        <TextBlock x:Name="InfoTextBlock"
+                   Grid.Row="2"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12"/>
+
+        <ListBox x:Name="FilesListBox"
+                 Grid.Row="3"
+                 SelectionMode="Single"
+                 SelectionChanged="FilesListBox_SelectionChanged">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"
+                               ToolTip="{Binding FullPath}"
+                               Padding="4"
+                               TextTrimming="CharacterEllipsis"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <WrapPanel Grid.Row="4"
+                   Margin="0,12,0,12">
+
+            <Button x:Name="RemoveButton"
+                    Padding="10,6"
+                    Margin="0,0,8,0"
+                    Click="RemoveButton_Click"/>
+
+            <Button x:Name="MoveUpButton"
+                    Padding="10,6"
+                    Margin="0,0,8,0"
+                    Click="MoveUpButton_Click"/>
+
+            <Button x:Name="MoveDownButton"
+                    Padding="10,6"
+                    Click="MoveDownButton_Click"/>
+
+        </WrapPanel>
+
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+
+            <Button x:Name="CancelButton"
+                    MinWidth="90"
+                    Padding="10,6"
+                    Margin="0,0,10,0"
+                    IsCancel="True"/>
+
+            <Button x:Name="ContinueButton"
+                    MinWidth="100"
+                    Padding="10,6"
+                    IsDefault="True"
+                    Click="ContinueButton_Click"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

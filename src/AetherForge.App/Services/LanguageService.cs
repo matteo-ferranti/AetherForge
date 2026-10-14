@@ -6,6 +6,13 @@ public static class LanguageService
 {
     private static readonly Dictionary<string, string> English = new()
     {
+        ["PdfImageDialogTitle"] = "PDF to image",
+        ["PdfImagePageLabel"] = "Page to export:",
+        ["PdfImagePageInvalid"] =
+            "Enter a page number between 1 and {0}.",
+        ["PdfImagesOutputFolderTitle"] =
+            "Choose where to create the exported images folder",
+        
         ["AboutButtonTooltip"] = "About and licenses",
 
         ["DragFilesText"] = "Drag your files here",
@@ -190,7 +197,7 @@ public static class LanguageService
         ["ShowOutputFolderText"] = "Show in folder",
 
         ["OutputFileUnavailable"] =
-            "The output file is no longer available. It may have been moved or deleted.",
+            "The output file or folder is no longer available.",
 
         ["OpenOutputFailed"] =
             "The file could not be opened. Check that an application is installed to open this file type.",
@@ -286,10 +293,47 @@ public static class LanguageService
         ["AboutWebsiteError"] =
             "Unable to open the website. Please try again.",
 
+        ["ImageToPdfFailed"] =
+            "The PDF could not be created from the image. Check that the input file is available and the output format is PDF.",
+
+        ["ImagePdfExportTitle"] = "Export images to PDF",
+        ["ImagePdfExportSeparate"] = "Create a separate PDF for each image",
+        ["ImagePdfExportCombined"] = "Combine images into a single PDF",
+        ["ImagePdfExportInfo"] =
+            "For a single PDF, arrange the images from top to bottom. Each image becomes one page. Images removed here remain in the main list. At least two images are required to combine them.",
+
+        ["ApplyOutputFormatToAll"] = "Apply this format to all",
+        ["ApplyOperationToAll"] = "Apply this operation to all",
+        ["BulkSettingsHint"] =
+            "Click the small arrow to apply this choice to compatible pending files.",
+
+        ["OcrModelsMissing"] =
+            "The OCR language files are missing. Reinstall the application.",
+
+        ["OcrEngineUnavailable"] =
+            "The OCR component could not be loaded. Reinstall the application. If the problem persists, contact support.",
+
+        ["OcrProcessingFailed"] =
+            "Text recognition failed on a PDF page.",
+
+        ["OcrNoTextFound"] =
+            "No text could be extracted or recognized in this PDF. Check that the pages contain clearly readable text.",
+
+        ["AboutSupportText"] = "Support the project",
+        ["AboutSupportError"] =
+            "Unable to open the support page. Please try again.",
+
     };
 
     private static readonly Dictionary<string, string> Italian = new()
     {
+        ["PdfImageDialogTitle"] = "PDF in immagine",
+        ["PdfImagePageLabel"] = "Pagina da esportare:",
+        ["PdfImagePageInvalid"] =
+            "Inserisci un numero di pagina compreso tra 1 e {0}.",
+        ["PdfImagesOutputFolderTitle"] =
+            "Scegli dove creare la cartella delle immagini esportate",
+        
         ["AboutButtonTooltip"] = "Informazioni e licenze",
         
         ["DragFilesText"] = "Trascina qui i tuoi file",
@@ -471,7 +515,7 @@ public static class LanguageService
         ["ShowOutputFolderText"] = "Mostra nella cartella",
 
         ["OutputFileUnavailable"] =
-            "Il file di uscita non è più disponibile. Potrebbe essere stato spostato o eliminato.",
+            "Il file o la cartella di destinazione non è più disponibile.",
 
         ["OpenOutputFailed"] =
             "Impossibile aprire il file. Verifica che sia installata un'applicazione adatta a questo tipo di file.",
@@ -567,6 +611,36 @@ public static class LanguageService
         ["AboutWebsiteError"] =
             "Impossibile aprire il sito web. Riprova.",
 
+        ["ImageToPdfFailed"] =
+            "Non è stato possibile creare il PDF dall'immagine. Verifica che il file di ingresso sia disponibile e che il formato di uscita sia PDF.",
+
+        ["ImagePdfExportTitle"] = "Esporta immagini in PDF",
+        ["ImagePdfExportSeparate"] = "Crea un PDF separato per ogni immagine",
+        ["ImagePdfExportCombined"] = "Unisci le immagini in un unico PDF",
+        ["ImagePdfExportInfo"] =
+            "Per un PDF unico, disponi le immagini dall'alto verso il basso. Ogni immagine diventa una pagina. Le immagini rimosse qui restano nella lista principale. Per unirle servono almeno due immagini.",
+
+        ["ApplyOutputFormatToAll"] = "Applica questo formato a tutti",
+        ["ApplyOperationToAll"] = "Applica questa operazione a tutti",
+        ["BulkSettingsHint"] =
+            "Premi la freccetta per applicare questa scelta ai file in attesa compatibili.",
+
+        ["OcrModelsMissing"] =
+            "I file delle lingue per il riconoscimento del testo sono mancanti. Reinstalla l'applicazione.",
+
+        ["OcrEngineUnavailable"] =
+            "Impossibile caricare il componente per il riconoscimento del testo. Reinstalla l'applicazione. Se il problema persiste, contatta l'assistenza.",
+
+        ["OcrProcessingFailed"] =
+            "Il riconoscimento del testo non è riuscito su una pagina del PDF.",
+
+        ["OcrNoTextFound"] =
+            "Non è stato possibile estrarre o riconoscere testo in questo PDF. Verifica che le pagine contengano testo chiaramente leggibile.",
+
+        ["AboutSupportText"] = "Sostieni il progetto",
+        ["AboutSupportError"] =
+            "Impossibile aprire la pagina per sostenere il progetto. Riprova.",
+
     };
 
     public static string CurrentLanguage { get; private set; } = "en";
@@ -599,6 +673,7 @@ public static class LanguageService
         "OutputMatchesOriginal",
         "CannotVerifyOutputSafety",
         "InvalidImageOutput",
+        "ImageSafetyLimitExceeded",
         "InvalidMediaOutput",
         "ArchiveSafetyLimitExceeded",
         "DocumentXmlLimitExceeded",
@@ -628,7 +703,12 @@ public static class LanguageService
         "MediaTrimSamePath",
         "MediaTrimUnsupportedOutput",
         "MediaTrimInvalidRange",
-        "MediaTrimFailed"
+        "MediaTrimFailed",
+        "ImageToPdfFailed",
+        "OcrModelsMissing",
+        "OcrEngineUnavailable",
+        "OcrProcessingFailed",
+        "OcrNoTextFound"
     ];
 
     Exception? current = exception;

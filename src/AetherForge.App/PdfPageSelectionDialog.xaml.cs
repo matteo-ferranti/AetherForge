@@ -15,7 +15,8 @@ public partial class PdfPageSelectionDialog : Window
 
     public PdfPageSelectionDialog(
         string fileName,
-        int pageCount)
+        int pageCount,
+        bool exportImages = false)
     {
         if (pageCount < 1)
         {
@@ -26,7 +27,10 @@ public partial class PdfPageSelectionDialog : Window
 
         _pageCount = pageCount;
 
-        Title = LanguageService.Get("OperationExtractPages");
+        Title = LanguageService.Get(
+            exportImages
+                ? "PdfImageDialogTitle"
+                : "OperationExtractPages");
 
         FileNameTextBlock.Text = string.Format(
             LanguageService.Get("PdfPagesFileLabel"),
@@ -45,8 +49,10 @@ public partial class PdfPageSelectionDialog : Window
         CancelButton.Content =
             LanguageService.Get("CancelText");
 
-        ExtractButton.Content =
-            LanguageService.Get("OperationExtractPages");
+        ExtractButton.Content = LanguageService.Get(
+            exportImages
+                ? "ImageTransformContinue"
+                : "OperationExtractPages");
 
         Loaded += (_, _) =>
         {

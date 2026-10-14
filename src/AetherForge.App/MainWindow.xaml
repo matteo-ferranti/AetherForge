@@ -304,12 +304,46 @@
 
     <DataGridTemplateColumn.CellTemplate>
         <DataTemplate>
-            <ComboBox
-                ItemsSource="{Binding AvailableOperations}"
-                SelectedItem="{Binding SelectedOperation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                SelectionChanged="OperationComboBox_SelectionChanged"
-                Height="28"
-                VerticalContentAlignment="Center"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+            
+                <ComboBox
+                    Grid.Column="0"
+                    ItemsSource="{Binding AvailableOperations}"
+                    SelectedItem="{Binding SelectedOperation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectionChanged="OperationComboBox_SelectionChanged"
+                    Height="28"
+                    VerticalContentAlignment="Center"/>
+            
+                <Button
+                    Grid.Column="1"
+                    Content="▾"
+                    Width="22"
+                    Height="28"
+                    Padding="0"
+                    Margin="4,0,0,0"
+                    Cursor="Hand"
+                    ToolTip="{DynamicResource BulkSettingsHint}"
+                    AutomationProperties.Name="{DynamicResource ApplyOperationToAll}"
+                    Click="OpenBulkSettingsMenu_Click">
+            
+                    <Button.ContextMenu>
+                        <ContextMenu
+                            Tag="Operation"
+                            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                            Opened="BulkSettingsContextMenu_Opened">
+            
+                            <MenuItem
+                                Header="{DynamicResource ApplyOperationToAll}"
+                                Click="ApplyOperationToAll_Click"/>
+            
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </Grid>
         </DataTemplate>
     </DataGridTemplateColumn.CellTemplate>
 
@@ -478,11 +512,45 @@
         <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
 
-                <ComboBox
-                    ItemsSource="{Binding AvailableOutputFormats}"
-                    SelectedItem="{Binding SelectedOutputFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Height="28"
-                    VerticalContentAlignment="Center"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                
+                    <ComboBox
+                        Grid.Column="0"
+                        ItemsSource="{Binding AvailableOutputFormats}"
+                        SelectedItem="{Binding SelectedOutputFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Height="28"
+                        VerticalContentAlignment="Center"/>
+                
+                    <Button
+                        Grid.Column="1"
+                        Content="▾"
+                        Width="22"
+                        Height="28"
+                        Padding="0"
+                        Margin="4,0,0,0"
+                        Cursor="Hand"
+                        ToolTip="{DynamicResource BulkSettingsHint}"
+                        AutomationProperties.Name="{DynamicResource ApplyOutputFormatToAll}"
+                        Click="OpenBulkSettingsMenu_Click">
+                
+                        <Button.ContextMenu>
+                            <ContextMenu
+                                Tag="Format"
+                                DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                Opened="BulkSettingsContextMenu_Opened">
+                
+                                <MenuItem
+                                    Header="{DynamicResource ApplyOutputFormatToAll}"
+                                    Click="ApplyOutputFormatToAll_Click"/>
+                
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                </Grid>
 
             </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
@@ -549,16 +617,64 @@
 
         </Border>
 
-        <TextBlock
-            x:Name="FooterTextBlock"
-            Grid.Row="2"
-            Margin="0,14,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="12"
-            Foreground="{StaticResource TextSecondaryBrush}"
-            Opacity="0.8"
-            Text="v 1.0.0 | Made by the Messere"/>
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    Margin="0,14,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock x:Name="FooterTextBlock"
+                       FontSize="14"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Opacity="0.8"
+                       Margin="0,0,16,0"
+                       VerticalAlignment="Center"
+                       Text="v 1.1.0"/>
+
+            <Border Width="1.5"
+                    Height="76"
+                    Background="{StaticResource TextSecondaryBrush}"
+                    Opacity="0.8"
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center"/>
+
+            <Button x:Name="StudioWebsiteButton"
+                    Padding="2"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    ToolTip="FlameSworn Studio"
+                    AutomationProperties.Name="FlameSworn Studio"
+                    Click="StudioWebsiteButton_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="LogoBorder"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                BorderThickness="1"
+                                BorderBrush="Transparent"
+                                CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="LogoBorder"
+                                        Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="LogoBorder"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource BronzeLightBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Image Source="Assets/Logos/flamesworn_logo.png"
+                       Width="190"
+                       Height="76"
+                       Stretch="Uniform"/>
+            </Button>
+        </StackPanel>
 
     </Grid>
 

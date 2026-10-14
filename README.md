@@ -9,8 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="https://aetherforgeconverter.pages.dev/en/" target="_blank" rel="noopener noreferrer">Website</a> ·
+  <a href="https://flameswornstudio.com/aetherforgeconverter/en/" target="_blank" rel="noopener noreferrer">Website</a> ·
   <a href="https://github.com/matteo-ferranti/AetherForge/releases" target="_blank" rel="noopener noreferrer">Releases</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="https://ko-fi.com/flameswornstudio">Support the project</a> ·
   <a href="https://github.com/matteo-ferranti/AetherForge/issues" target="_blank" rel="noopener noreferrer">Report an issue</a> ·
   <a href="README.it.md">Italiano</a>
 </p>
@@ -23,22 +25,36 @@ AetherForge brings file conversion and practical editing tools into a single des
 
 Processing takes place locally on your computer. You do not need to upload files to an online conversion service. The installer includes the .NET runtime and the processing components used by the application.
 
+## Latest update — 1.1.0
+
+**Development version: 1.1.0 — not yet released. Latest published release: 1.0.0.**
+
+- Automatic English and Italian OCR for PDF → TXT on pages without extractable text, including mixed PDFs.
+- Images → PDF, either separately or combined in a single PDF with ordering and removal controls.
+- PDF → PNG/JPG, with single-page export or a consecutive page range saved in a dedicated folder.
+- Small arrow menus to apply an operation or output format to all compatible pending files.
+- Updated FlameSworn Studio branding, language-specific website links, and a Ko-fi support button.
+
+See the **[full version history](CHANGELOG.md)** for earlier releases.
+
 ## Features
 
 | Category | Available tools |
 | --- | --- |
-| Images | Format conversion, resizing, rotation, flipping, quality adjustment, and metadata removal for supported formats. |
+| Images | Format conversion, resizing, rotation, flipping, quality adjustment, metadata removal for supported formats, and PDF export individually or as an ordered collection. |
 | Audio | Format conversion, trimming, bitrate adjustment for supported formats, and metadata removal. |
 | Video | Format conversion, trimming, audio extraction, audio removal, GIF creation, and metadata removal. |
-| Text documents | Conversion between supported text and office formats, PDF text extraction, and PDF export. |
+| Text documents | Conversion between supported text and office formats, PDF text extraction with automatic English/Italian OCR on pages without extractable text, and PDF export. |
 | Spreadsheets | Conversion between supported spreadsheet formats, PDF export, and CSV export with worksheet selection. CSV input can be exported to PDF. |
 | Presentations | Conversion between PPT, PPTX, and ODP, plus PDF export. |
 | E-books | EPUB conversion to TXT and PDF. |
-| PDF tools | Merge files in a chosen order and extract selected pages or page ranges. |
+| PDF tools | Merge files in a chosen order, extract selected pages or page ranges, and export pages to PNG/JPG. |
 
-The file list also provides drag and drop, per-file operation and output selection, processing status, and buttons to open completed results or show them in their folder.
+The file list also provides drag and drop, per-file operation and output selection, processing status, and buttons to open completed results or show them in their folder. The small arrows beside operation and output selectors let you apply a choice to all compatible pending files.
 
 ## Screenshots
+
+These screenshots show version 1.0.0. Version 1.1.0 updates the interface and adds the tools listed above.
 
 ### Main window
 
@@ -62,7 +78,8 @@ Add PDF files and arrange their order before merging them.
 
 | Category | Examples of accepted inputs | Conversion outputs |
 | --- | --- | --- |
-| Images | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | JPG, PNG, WebP, BMP, TIFF, AVIF |
+| Images | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | PDF, JPG, PNG, WebP, BMP, TIFF, AVIF |
+| PDF | PDF | TXT (with automatic OCR when needed), PNG, JPG |
 | Audio | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS, WMA, AIFF, AC3 | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS |
 | Video | MP4, MKV, AVI, MOV, WebM, WMV, FLV, MPEG, TS | MP4, MKV, MOV, WebM, AVI |
 | Documents | PDF, TXT, DOC, DOCX, ODT, RTF, HTML, EPUB | Available outputs depend on the input format |
@@ -76,6 +93,8 @@ These lists do not imply that every format can be converted to every other forma
 **Target platform:** Windows 11 on an Intel or AMD x64 processor.
 
 [**Download AetherForge 1.0.0 — Windows x64 installer**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
+
+This download is the published 1.0.0 release. The 1.1.0 features described above are currently available in the source code; its installer has not been published yet.
 
 1. Download the installer using the link above.
 2. Run `AetherForge-Setup-1.0.0-win-x64.exe`.
@@ -94,11 +113,14 @@ The current installer targets Windows 11 x64. Windows 10 and ARM compatibility h
 
 1. Drag files into the main window or use **Select files**.
 2. Choose an operation and an available output format for each file.
+   Use the small arrow beside either selector to apply that choice to all compatible pending files.
 3. Set any options required by the operation.
 4. Start processing and choose where to save the results.
 5. Check the status of each file, then open the result or its folder.
 
 PDF merging uses a separate window where you can add files, arrange their order, and choose an output destination.
+
+When converting several images to PDF, choose separate outputs or a single PDF, then arrange the image order. For PDF → PNG/JPG, select a page or a consecutive page range; multiple pages are exported into a dedicated folder. PDF → TXT automatically uses OCR on pages without extractable text.
 
 ## Processing safeguards and limitations
 
@@ -106,7 +128,9 @@ AetherForge includes checks against overwriting input files, temporary output st
 
 These checks do not constitute a complete sandbox or a guarantee that every input is safe.
 
-- **PDF to TXT has no OCR:** scanned pages need a text layer for extraction.
+- OCR recognizes English and Italian text locally. Results depend on scan quality; it does not guarantee accurate handwriting recognition or preservation of tables and layout.
+- Automatic OCR runs on pages without extractable text. An image containing text on a page that also has an extractable text layer is not separately recognized.
+- Image → PDF exports the first frame of animated GIFs and the first page of multipage TIFFs.
 - Office and presentation conversion may change layout, fonts, or application-specific features.
 - Operations and quality settings vary by format.
 - Metadata removal is available for supported formats and is not full content anonymization.
@@ -114,7 +138,9 @@ These checks do not constitute a complete sandbox or a guarantee that every inpu
 
 ## Release validation
 
-The published application and installer have passed conversion, installation, and uninstallation checks on the development computer. The application was also tested successfully on a clean Windows 11 installation.
+**1.0.0:** the published application and installer passed conversion, installation, and uninstallation checks on the development computer. The application was also tested successfully on a clean Windows 11 installation.
+
+**1.1.0:** OCR, image/PDF conversion, and bulk selection changes have passed functional checks on the development computer. OCR has also been checked in a self-contained Release build. Validation of the new installer and the new components on a clean Windows 11 installation is pending.
 
 ## Building from source
 
@@ -130,11 +156,17 @@ tools/
 │   └── ffprobe.exe
 ├── libreoffice/
 │   └── program/soffice.com
-└── qpdf/
-    └── bin/qpdf.exe
+├── qpdf/
+│   └── bin/qpdf.exe
+└── vcruntime/
+    ├── msvcp140.dll
+    ├── vcruntime140.dll
+    └── vcruntime140_1.dll
 ```
 
 Include the complete LibreOffice and qpdf distributions and their supporting files, rather than only the executables. These tool directories are not committed to this repository.
+
+NuGet restores PDFtoImage, PDFium, SkiaSharp, and TesseractOCR, including their native libraries. English and Italian OCR models are stored in `src/AetherForge.App/Assets/OCR/tessdata` and copied to the build and publish folders. Keep both `eng.traineddata` and `ita.traineddata` together with the application. The x64 Visual C++ runtime DLLs in `tools/vcruntime` are copied beside the executable; their redistribution is subject to the [Microsoft licensing terms](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files).
 
 From the repository root:
 
@@ -159,6 +191,9 @@ AetherForge uses:
 - **FFmpeg and FFprobe** for audio and video processing.
 - **LibreOffice** for office document conversion.
 - **PdfPig** for PDF text extraction.
+- **PDFtoImage / PDFium / SkiaSharp** for rendering PDF pages as images.
+- **TesseractOCR / Tesseract / Leptonica** with English and Italian **tessdata_fast** models for OCR.
+- **Microsoft Visual C++ Runtime** for the native OCR components.
 - **Open XML SDK** for supported Office document operations.
 - **qpdf** for PDF processing.
 - **Noto Sans** for text rendering in generated documents.
@@ -169,11 +204,13 @@ License texts and notices are available in `src/AetherForge.App/Assets/Licenses`
 
 ## Author and attribution
 
-Created by **Matteo Ferranti**.
+Created by **Matteo Ferranti**, under **[FlameSworn Studio](https://flameswornstudio.com/en/)**.
 
 If you use AetherForge or its code in your project, a visible credit to the author and a link to this repository are appreciated. This is a request, not an additional condition of the MIT License.
 
 ## Feedback and contributions
+
+If you would like to support development, visit **[FlameSworn Studio on Ko-fi](https://ko-fi.com/flameswornstudio)**.
 
 Suggestions, reproducible bug reports, and contributions are welcome through [GitHub Issues](https://github.com/matteo-ferranti/AetherForge/issues) and pull requests.
 

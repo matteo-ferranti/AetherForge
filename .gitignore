@@ -491,3 +491,6 @@ tools/ffmpeg/ffprobe.exe
 
 # Qpdf
 /tools/qpdf/
+
+# VCruntime
+/tools/vcruntime/

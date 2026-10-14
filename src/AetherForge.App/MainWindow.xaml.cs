@@ -1,4 +1,4 @@
-﻿using AetherForge.App.Models;
+using AetherForge.App.Models;
 
 using AetherForge.App.Services;
 
@@ -29,6 +29,75 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<LoadedFile> _loadedFiles = [];
 
     private bool _isProcessing;
+    private int _processingRunId;
+    private int _processingOperationId;
+    private bool _allowDropBeforeProcessing;
+
+    private void ShowProcessingOverlay()
+    {
+        _processingRunId++;
+        _allowDropBeforeProcessing = AllowDrop;
+        AllowDrop = false;
+        ProcessingTitleTextBlock.Text = LanguageService.Get("ProcessingTitle");
+        ProcessingFileTextBlock.Text = string.Empty;
+        ProcessingOperationTextBlock.Text = string.Empty;
+        ProcessingStatusTextBlock.Text = LanguageService.Get("ProcessingWorking");
+        SetOverallProgress(0, 1);
+        ProcessingOverlay.Visibility = Visibility.Visible;
+        System.Windows.Input.Keyboard.Focus(ProcessingOverlay);
+    }
+
+    private void HideProcessingOverlay()
+    {
+        _processingRunId++;
+        _processingOperationId++;
+        ProcessingOverlay.Visibility = Visibility.Collapsed;
+        AllowDrop = _allowDropBeforeProcessing;
+        if (IsActive)
+        {
+            FilesDataGrid.Focus();
+        }
+    }
+
+    private void ShowProcessingOperation(int finished, int total, string path)
+    {
+        _processingOperationId++;
+        ProcessingFileTextBlock.Text = Path.GetFileName(path);
+        ProcessingOperationTextBlock.Text = string.Format(
+            LanguageService.Get("ProcessingOperation"), finished + 1, total);
+        ProcessingStatusTextBlock.Text = LanguageService.Get("ProcessingWorking");
+        SetOverallProgress(finished, total);
+    }
+
+    private void SetOverallProgress(double finished, int total)
+    {
+        double percentage = Math.Clamp(100 * finished / Math.Max(1, total), 0, 100);
+        ProcessingProgressBar.Value = percentage;
+        ProcessingPercentageTextBlock.Text = $"{Math.Floor(percentage):0}%";
+    }
+
+    private IProgress<(int CompletedPages, int TotalPages)> CreatePageProgress(
+        int finished, int total)
+    {
+        int runId = _processingRunId;
+        int operationId = _processingOperationId;
+        return new Progress<(int CompletedPages, int TotalPages)>(pages =>
+        {
+            if (!_isProcessing || runId != _processingRunId ||
+                operationId != _processingOperationId || pages.TotalPages <= 0)
+            {
+                return;
+            }
+
+            double fraction = Math.Clamp(
+                (double)pages.CompletedPages / pages.TotalPages, 0, 1);
+            SetOverallProgress(finished + 0.95 * fraction, total);
+            ProcessingStatusTextBlock.Text = pages.CompletedPages >= pages.TotalPages
+                ? LanguageService.Get("ProcessingSaving")
+                : string.Format(LanguageService.Get("ProcessingPages"),
+                    pages.CompletedPages, pages.TotalPages);
+        });
+    }
 
 
     private static readonly HashSet<string> ImageExtensions =
@@ -175,6 +244,16 @@ public partial class MainWindow : Window
 
     ];
 
+    private async void MainWindow_ContentRendered(object? sender, EventArgs e)
+    {
+        ContentRendered -= MainWindow_ContentRendered;
+        if (UpdateSettingsService.AutomaticChecksEnabled)
+        {
+            await UpdateDialogService.CheckAndNotifyAsync(
+                this, automatic: true, canNotify: () => !_isProcessing && IsActive);
+        }
+    }
+
     private void StudioWebsiteButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -295,9 +374,17 @@ private void OpenResult(
 
         InitializeComponent();
 
+        Rect availableArea = SystemParameters.WorkArea;
+        Width = Math.Min(Width, Math.Max(320, availableArea.Width - 40));
+        Height = Math.Min(Height, Math.Max(240, availableArea.Height - 40));
+        MinWidth = Math.Min(MinWidth, Width);
+        MinHeight = Math.Min(MinHeight, Height);
+
         string appVersion = typeof(App).Assembly.GetName()
             .Version?.ToString(3) ?? "1.1.0";
         FooterTextBlock.Text = $"v {appVersion}";
+
+        ContentRendered += MainWindow_ContentRendered;
 
 
 
@@ -700,14 +787,19 @@ if (_loadedFiles.Any(file =>
 
     _isProcessing = true;
     UpdateConvertButtonState();
+    ShowProcessingOverlay();
+    ShowProcessingOperation(0, 1, outputPath);
 
     string? errorMessage = null;
 
     try
     {
+        await System.Windows.Threading.Dispatcher.Yield(
+            System.Windows.Threading.DispatcherPriority.Background);
         await PdfPageService.MergePdfsAsync(
             inputPaths,
             outputPath);
+        SetOverallProgress(1, 1);
     }
 
 
@@ -734,6 +826,7 @@ if (_loadedFiles.Any(file =>
     finally
     {
         _isProcessing = false;
+        HideProcessingOverlay();
         UpdateConvertButtonState();
     }
 
@@ -1428,10 +1521,14 @@ if (imagePdfCandidates.Count >= 2)
 
         List<(string FileName, Exception Error)> errorDetails = [];
 
+        int finishedOperations = 0;
+        int totalOperations = filesToProcess.Count;
+
 
 
         _isProcessing = true;
         UpdateConvertButtonState();
+        ShowProcessingOverlay();
 
 
 
@@ -1446,6 +1543,11 @@ if (imagePdfCandidates.Count >= 2)
                 if (file.SelectedOperation is null)
 
                     continue;
+
+                ShowProcessingOperation(finishedOperations, totalOperations, file.FullPath);
+                var pageProgress = CreatePageProgress(finishedOperations, totalOperations);
+                await System.Windows.Threading.Dispatcher.Yield(
+                    System.Windows.Threading.DispatcherPriority.Background);
 
 
 
@@ -1615,6 +1717,15 @@ if (file.Category == "Document")
     {
         await DocumentConversionService.ConvertPdfToTextAsync(
             file.FullPath,
+            outputPath,
+            progress: pageProgress);
+    }
+    else if (file.Format == "PDF" &&
+             file.SelectedOutputFormat == "DOCX")
+    {
+        ProcessingStatusTextBlock.Text = LanguageService.Get("PdfDocxWorking");
+        await LibreOfficeService.ConvertDocumentAsync(
+            file.FullPath,
             outputPath);
     }
     else if (file.Format == "EPUB" &&
@@ -1749,9 +1860,9 @@ else if (file.Category == "Audio")
 
                                     convertsToJpeg &&
 
-                                    ImageConversionService.HasTransparency(
+                                    await Task.Run(() => ImageConversionService.HasTransparency(
 
-                                        file.FullPath);
+                                        file.FullPath));
 
 
 
@@ -1759,7 +1870,7 @@ else if (file.Category == "Audio")
 
                                 {
 
-                                    ImageConversionService
+                                    await Task.Run(() => ImageConversionService
 
                                         .ConvertImageWithWhiteBackground(
 
@@ -1767,7 +1878,7 @@ else if (file.Category == "Audio")
 
                                             outputPath,
 
-                                            file.SelectedOutputFormat);
+                                            file.SelectedOutputFormat));
 
                                 }
 
@@ -1775,13 +1886,13 @@ else if (file.Category == "Audio")
 
                                 {
 
-                                    ImageConversionService.ConvertImage(
+                                    await Task.Run(() => ImageConversionService.ConvertImage(
 
                                         file.FullPath,
 
                                         outputPath,
 
-                                        file.SelectedOutputFormat);
+                                        file.SelectedOutputFormat));
 
                                 }
 
@@ -2196,7 +2307,7 @@ case ConversionOperation.Trim:
 
 
 
-                            ImageConversionService.ResizeImage(
+                            await Task.Run(() => ImageConversionService.ResizeImage(
 
                                 file.FullPath,
 
@@ -2204,7 +2315,7 @@ case ConversionOperation.Trim:
 
                                 (uint)file.ResizeWidth.Value,
 
-                                (uint)file.ResizeHeight.Value);
+                                (uint)file.ResizeHeight.Value));
 
 
 
@@ -2268,9 +2379,9 @@ case ConversionOperation.Trim:
                                 }
                                 else
                                 {
-                                    ImageConversionService.RemoveMetadata(
+                                    await Task.Run(() => ImageConversionService.RemoveMetadata(
                                         file.FullPath,
-                                        outputPath);
+                                        outputPath));
                                 }
 
 
@@ -2337,10 +2448,10 @@ case ConversionOperation.ChangeQuality:
     }
     else
     {
-        ImageConversionService.ChangeQuality(
+        await Task.Run(() => ImageConversionService.ChangeQuality(
             file.FullPath,
             outputPath,
-            (uint)file.QualityPercent!.Value);
+            (uint)file.QualityPercent!.Value));
     }
 
     MarkFileCompleted(file, outputPath);
@@ -2379,12 +2490,20 @@ case ConversionOperation.ChangeQuality:
         }
     }
 }
+                finally
+                {
+                    _processingOperationId++;
+                    finishedOperations++;
+                    SetOverallProgress(finishedOperations, totalOperations);
+                }
             } // Chiude foreach
         } // Chiude try
         finally
 
         {
             _isProcessing = false;
+
+            HideProcessingOverlay();
 
             FilesDataGrid.Items.Refresh();
 
@@ -3525,7 +3644,7 @@ case ConversionOperation.ChangeQuality:
 
                 "Document" => inputFormat switch
                 {
-                    "PDF" => new[] { "TXT", "PNG", "JPG" },
+                "PDF" => new[] { "TXT", "DOCX", "PNG", "JPG" },
                     "EPUB" => new[] { "PDF", "TXT" },
                     "TXT" => new[] { "PDF", "DOCX", "ODT", "RTF" },
                     "DOCX" => new[] { "PDF", "TXT", "ODT", "RTF" },

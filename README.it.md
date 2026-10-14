@@ -27,13 +27,16 @@ L'elaborazione avviene localmente sul computer. Non è necessario caricare i fil
 
 ## Ultimo aggiornamento — 1.1.0
 
-**Versione in sviluppo: 1.1.0 — non ancora pubblicata. Ultima release pubblicata: 1.0.0.**
+**La versione 1.1.0** aggiunge OCR, conversioni immagini/PDF, PDF → DOCX, avanzamento dell'elaborazione e controllo aggiornamenti.
 
 - OCR automatico in italiano e inglese per PDF → TXT sulle pagine prive di testo estraibile, anche nei PDF misti.
 - Immagini → PDF, con esportazione separata o unione in un unico PDF e controlli per ordinare e rimuovere le immagini.
 - PDF → PNG/JPG, con esportazione di una pagina o di un intervallo consecutivo in una cartella dedicata.
+- PDF → DOCX tramite l'importazione PDF di LibreOffice già incluso, per conservare testo, immagini e impaginazione quando possibile.
+- Pannello di elaborazione in sovraimpressione con progresso per pagina per PDF → TXT, avanzamento complessivo del batch e indicatore di attività per le altre conversioni.
 - Menu con freccetta per applicare un'operazione o un formato di output a tutti i file compatibili in attesa.
 - Nuova identità FlameSworn Studio, collegamenti al sito in base alla lingua e pulsante per sostenere il progetto su Ko-fi.
+- Controllo aggiornamenti nelle Informazioni e all'avvio, con preferenza salvata per disattivare i controlli automatici.
 
 Lo **[storico completo delle versioni](CHANGELOG.it.md)** è disponibile nel changelog.
 
@@ -48,7 +51,7 @@ Lo **[storico completo delle versioni](CHANGELOG.it.md)** è disponibile nel cha
 | Fogli di calcolo | Conversione tra i formati supportati, esportazione in PDF e in CSV con selezione del foglio. I CSV in ingresso possono essere esportati in PDF. |
 | Presentazioni | Conversione tra PPT, PPTX e ODP ed esportazione in PDF. |
 | E-book | Conversione di EPUB in TXT e PDF. |
-| Strumenti PDF | Unione di file nell'ordine scelto, estrazione di pagine o intervalli di pagine ed esportazione delle pagine in PNG/JPG. |
+| Strumenti PDF | Unione di file nell'ordine scelto, estrazione di pagine o intervalli, esportazione in PNG/JPG e conversione PDF → DOCX con testo, immagini e impaginazione. |
 
 L'elenco dei file offre inoltre trascinamento, scelta dell'operazione e del formato di output per ciascun file, stato dell'elaborazione e pulsanti per aprire i risultati completati o mostrarli nella cartella. Le freccette accanto ai selettori di operazione e formato permettono di applicare una scelta a tutti i file compatibili in attesa.
 
@@ -79,7 +82,7 @@ Aggiungi i file PDF e scegli il loro ordine prima di unirli.
 | Categoria | Esempi di formati in ingresso | Formati di conversione in uscita |
 | --- | --- | --- |
 | Immagini | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | PDF, JPG, PNG, WebP, BMP, TIFF, AVIF |
-| PDF | PDF | TXT (con OCR automatico quando necessario), PNG, JPG |
+| PDF | PDF | TXT (con OCR automatico quando necessario), DOCX, PNG, JPG |
 | Audio | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS, WMA, AIFF, AC3 | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS |
 | Video | MP4, MKV, AVI, MOV, WebM, WMV, FLV, MPEG, TS | MP4, MKV, MOV, WebM, AVI |
 | Documenti | PDF, TXT, DOC, DOCX, ODT, RTF, HTML, EPUB | I formati disponibili dipendono dal file in ingresso |
@@ -92,12 +95,10 @@ Questi elenchi non indicano che ogni formato possa essere convertito in tutti gl
 
 **Piattaforma di destinazione:** Windows 11 con processore Intel o AMD x64.
 
-[**Scarica AetherForge 1.0.0 — Installer Windows x64**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
-
-Questo download è la release 1.0.0 pubblicata. Le funzionalità della 1.1.0 descritte sopra sono attualmente disponibili nel codice sorgente; il nuovo installer non è ancora stato pubblicato.
+[**Scarica AetherForge 1.1.0 — Installer Windows x64**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.1.0/AetherForge-Setup-1.1.0-win-x64.exe)
 
 1. Scarica l'installer tramite il collegamento sopra.
-2. Avvia `AetherForge-Setup-1.0.0-win-x64.exe`.
+2. Avvia `AetherForge-Setup-1.1.0-win-x64.exe`.
 3. Seleziona italiano o inglese e segui la procedura. L'inglese è selezionato per impostazione predefinita.
 4. Apri AetherForge dal menu Start o dal collegamento desktop facoltativo.
 
@@ -111,6 +112,14 @@ I [sorgenti e gli script di compilazione di FFmpeg](https://github.com/matteo-fe
 
 ## Primi passi
 
+### Aggiornamenti
+
+Dalla versione 1.1.0, usa **Controlla aggiornamenti** nella scheda Informazioni oppure lascia attivo **Controlla aggiornamenti all'avvio**. La scelta viene ricordata tra gli avvii. Il controllo contatta GitHub e richiede internet; l'elaborazione dei file resta locale e funziona offline. Se una nuova release stabile contiene l'installer Windows x64, l'app chiede se aprire la pagina ufficiale. Download e installazione restano sotto il tuo controllo.
+
+Esegui il nuovo installer nella cartella dell'installazione esistente per aggiornare; non occorre disinstallare prima. La 1.0.0 non ha il controllo aggiornamenti, quindi il primo aggiornamento va scaricato manualmente. All'avvio, l'assenza di connessione non produce avvisi; il controllo manuale segnala gli errori di connessione.
+
+### Elaborazione dei file
+
 1. Trascina i file nella finestra principale oppure usa **Seleziona file**.
 2. Scegli un'operazione e un formato di output disponibile per ciascun file.
    Usa la freccetta accanto al selettore per applicare la scelta a tutti i file compatibili in attesa.
@@ -122,6 +131,8 @@ L'unione PDF utilizza una finestra dedicata, in cui puoi aggiungere i file, modi
 
 Quando converti più immagini in PDF, scegli se esportarle separatamente o unirle in un unico documento, quindi imposta l'ordine. Per PDF → PNG/JPG, seleziona una pagina o un intervallo consecutivo; più pagine vengono esportate in una cartella dedicata. PDF → TXT utilizza automaticamente l'OCR sulle pagine prive di testo estraibile.
 
+Per PDF → DOCX, scegli DOCX come formato di uscita. Il convertitore importa i contenuti delle pagine in Word, comprese le immagini e il testo modificabile quando il PDF contiene un livello di testo. Il pannello di elaborazione mostra il file corrente e il progresso complessivo. PDF → TXT indica anche le pagine completate; le operazioni prive di una percentuale interna mostrano un indicatore di attività fino al termine.
+
 ## Protezioni e limitazioni
 
 AetherForge include controlli contro la sovrascrittura dei file in ingresso, scritture temporanee per i flussi supportati, limiti sulle risorse per immagini e archivi e restrizioni su alcune risorse esterne e sui contenuti attivi dei documenti.
@@ -131,6 +142,7 @@ Questi controlli non costituiscono una sandbox completa né garantiscono la sicu
 - L'OCR riconosce localmente testi in italiano e inglese. Il risultato dipende dalla qualità della scansione; non garantisce un riconoscimento accurato della scrittura a mano né la conservazione di tabelle e impaginazione.
 - L'OCR automatico si attiva sulle pagine prive di testo estraibile. Un'immagine contenente testo su una pagina che ha anche un livello di testo estraibile non viene riconosciuta separatamente.
 - Immagini → PDF esporta il primo fotogramma delle GIF animate e la prima pagina dei TIFF multipagina.
+- PDF → DOCX cerca di conservare l'aspetto delle pagine. Il testo può diventare caselle posizionate e le tabelle possono essere rappresentate da linee e caselle di testo anziché da tabelle native di Word. Le pagine scansionate possono restare immagini nel DOCX; l'OCR automatico attualmente riguarda PDF → TXT.
 - La conversione di documenti Office e presentazioni può modificare impaginazione, font o funzioni specifiche dell'applicazione di origine.
 - Le operazioni e le impostazioni di qualità variano in base al formato.
 - La rimozione dei metadati è disponibile per i formati supportati e non equivale all'anonimizzazione completa del contenuto.
@@ -140,7 +152,7 @@ Questi controlli non costituiscono una sandbox completa né garantiscono la sicu
 
 **1.0.0:** l'applicazione pubblicata e l'installer hanno superato le prove di conversione, installazione e disinstallazione sul computer di sviluppo. L'applicazione è stata provata con successo anche su un'installazione pulita di Windows 11.
 
-**1.1.0:** OCR, conversioni immagini/PDF e applicazione delle scelte a più file hanno superato le prove funzionali sul computer di sviluppo. L'OCR è stato verificato anche in una compilazione Release con runtime incluso. Restano da verificare il nuovo installer e i nuovi componenti su un'installazione pulita di Windows 11.
+**1.1.0:** OCR, conversioni immagini/PDF e applicazione delle scelte a più file hanno superato le prove funzionali sul computer di sviluppo. L'OCR è stato verificato anche in una compilazione Release con runtime incluso. PDF → DOCX e avanzamento dell'elaborazione hanno superato ulteriori controlli di sviluppo. Il risultato di PDF → DOCX resta dipendente dal documento di origine. Restano da verificare il nuovo installer e i nuovi componenti su un'installazione pulita di Windows 11; la prova della 1.0.0 su un sistema pulito non copre queste aggiunte.
 
 ## Compilazione dal codice sorgente
 

@@ -19,6 +19,12 @@ public partial class AboutDialog : Window
     {
         InitializeComponent();
 
+        Rect availableArea = SystemParameters.WorkArea;
+        Width = Math.Min(Width, Math.Max(320, availableArea.Width - 40));
+        Height = Math.Min(Height, Math.Max(240, availableArea.Height - 40));
+        MinWidth = Math.Min(MinWidth, Width);
+        MinHeight = Math.Min(MinHeight, Height);
+
         Title = LanguageService.Get("AboutDialogTitle");
 
         InformationTab.Header =
@@ -103,6 +109,11 @@ catch (Exception ex) when (
 
         SupportButtonText.Text =
             LanguageService.Get("AboutSupportText");
+
+        CheckUpdatesButton.Content = LanguageService.Get("UpdateCheckButton");
+        AutomaticUpdatesCheckBox.Content = LanguageService.Get("UpdateAutomaticChecks");
+        AutomaticUpdatesCheckBox.IsChecked = UpdateSettingsService.AutomaticChecksEnabled;
+        UpdateConnectionTextBlock.Text = LanguageService.Get("UpdateConnectionInfo");
 
         CloseButton.Content =
             LanguageService.Get("AboutCloseText");
@@ -244,6 +255,38 @@ catch (Exception ex) when (
         LicenseTextBox.ScrollToHome();
     }
 
+
+    private async void CheckUpdatesButton_Click(object sender, RoutedEventArgs e)
+    {
+        CheckUpdatesButton.IsEnabled = false;
+        CheckUpdatesButton.Content = LanguageService.Get("UpdateChecking");
+        try
+        {
+            await UpdateDialogService.CheckAndNotifyAsync(this);
+        }
+        finally
+        {
+            CheckUpdatesButton.IsEnabled = true;
+            CheckUpdatesButton.Content = LanguageService.Get("UpdateCheckButton");
+        }
+    }
+
+    private void AutomaticUpdatesCheckBox_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            UpdateSettingsService.SetAutomaticChecks(
+                AutomaticUpdatesCheckBox.IsChecked == true);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            AutomaticUpdatesCheckBox.IsChecked = UpdateSettingsService.AutomaticChecksEnabled;
+            MessageBox.Show(this,
+                LanguageService.Get("UpdateSettingsSaveError"),
+                LanguageService.Get("UpdateDialogTitle"),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
 
     private void SupportButton_Click(
     object sender,

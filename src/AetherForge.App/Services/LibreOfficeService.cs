@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using Word = DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AetherForge.App.Services;
 
@@ -41,7 +43,9 @@ bool isSpreadsheet =
 bool isTextDocument =
     inputExtension is
         ".docx" or ".doc" or ".odt" or ".rtf" or ".txt" or
-        ".html" or ".htm";
+        ".html" or ".htm" or ".pdf";
+
+bool isPdf = inputExtension == ".pdf";
 
 bool isPresentation =
     inputExtension is ".ppt" or ".pptx" or ".odp";
@@ -50,7 +54,9 @@ bool supportedInput =
     isSpreadsheet || isTextDocument || isPresentation;
 
 bool supportedOutput =
-    isPresentation
+    isPdf
+        ? outputExtension == ".docx"
+        : isPresentation
         ? outputExtension is ".pdf" or ".ppt" or ".pptx" or ".odp"
         : isSpreadsheet
             ? outputExtension == ".pdf" ||
@@ -82,6 +88,11 @@ if (inputExtension is ".docx" or ".xlsx" or ".pptx" or
             inputPath,
             cancellationToken),
         cancellationToken);
+}
+
+if (isPdf)
+{
+    await PdfImageService.GetPageCountAsync(inputPath, cancellationToken);
 }
 
 string exportFilter = outputExtension switch
@@ -227,6 +238,10 @@ if (inputExtension is ".txt" or ".csv")
                 startInfo.ArgumentList.Add(
                     "--infilter=Text (encoded):UTF8");
             }
+            else if (isPdf)
+            {
+                startInfo.ArgumentList.Add("--infilter=writer_pdf_import");
+            }
             else if (inputExtension is ".html" or ".htm")
             {
                 startInfo.ArgumentList.Add(
@@ -317,6 +332,12 @@ else
 if (process.ExitCode != 0 ||
     !File.Exists(generatedFilePath))
 {
+    if (isPdf)
+    {
+        throw new InvalidOperationException(
+            LanguageService.Get("PdfDocxConversionFailed"));
+    }
+
     throw new InvalidOperationException(
         LanguageService.Get("OfficeConversionFailed") +
         Environment.NewLine +
@@ -329,6 +350,40 @@ if (new FileInfo(generatedFilePath).Length == 0)
 {
     throw new InvalidDataException(
         LanguageService.Get("InvalidOfficeOutput"));
+}
+
+if (isPdf)
+{
+    await Task.Run(() =>
+    {
+        ArchiveSecurityService.ValidateArchive(generatedFilePath, cancellationToken);
+        using WordprocessingDocument wordDocument =
+            WordprocessingDocument.Open(generatedFilePath, true);
+        var document = wordDocument.MainDocumentPart?.Document;
+        if (document?.Body is null)
+        {
+            throw new InvalidDataException(LanguageService.Get("InvalidOfficeOutput"));
+        }
+
+        // PDF-imported objects carry absolute positions. Writer's default margins
+        // would otherwise shift every object when the DOCX is opened or exported.
+        foreach (Word.SectionProperties section in document.Descendants<Word.SectionProperties>())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Word.PageMargin? margin = section.GetFirstChild<Word.PageMargin>();
+            if (margin is not null)
+            {
+                margin.Top = 0;
+                margin.Bottom = 0;
+                margin.Left = 0U;
+                margin.Right = 0U;
+                margin.Header = 0U;
+                margin.Footer = 0U;
+                margin.Gutter = 0U;
+            }
+        }
+        document.Save();
+    }, cancellationToken);
 }
 
 if (outputExtension == ".pdf")

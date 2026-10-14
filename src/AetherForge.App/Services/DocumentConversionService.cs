@@ -18,7 +18,8 @@ public static class DocumentConversionService
 public static async Task ConvertPdfToTextAsync(
     string inputPath,
     string outputPath,
-    CancellationToken cancellationToken = default)
+    CancellationToken cancellationToken = default,
+    IProgress<(int CompletedPages, int TotalPages)>? progress = null)
 {
     ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
     ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
@@ -58,6 +59,8 @@ public static async Task ConvertPdfToTextAsync(
             using PdfDocument document =
                 PdfDocument.Open(inputPath);
 
+            progress?.Report((0, document.NumberOfPages));
+
             StringBuilder result = new();
 
             foreach (var page in document.GetPages())
@@ -91,6 +94,7 @@ public static async Task ConvertPdfToTextAsync(
                 }
 
                 result.Append(pageText.Trim());
+                progress?.Report((page.Number, document.NumberOfPages));
             }
 
             string text = result.ToString();

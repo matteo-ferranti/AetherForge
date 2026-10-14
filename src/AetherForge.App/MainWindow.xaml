@@ -4,8 +4,8 @@
         xmlns:models="clr-namespace:AetherForge.App.Models"
         Title="AetherForge Converter"
         Icon="Assets/Icons/AetherForge.ico"
-        Width="1400"
-        Height="850"
+        Width="1500"
+        Height="900"
         MinWidth="1000"
         MinHeight="650"
         WindowStartupLocation="CenterScreen"
@@ -675,6 +675,57 @@
                        Stretch="Uniform"/>
             </Button>
         </StackPanel>
+
+        <Border x:Name="ProcessingOverlay"
+                Grid.RowSpan="3"
+                Panel.ZIndex="100"
+                Visibility="Collapsed"
+                Background="#99000000"
+                Focusable="True"
+                KeyboardNavigation.TabNavigation="Cycle">
+            <Border Width="520"
+                    MaxWidth="520"
+                    Margin="20"
+                    Padding="28"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    CornerRadius="14"
+                    Background="{StaticResource PanelBrush}"
+                    BorderBrush="{StaticResource BronzeLightBrush}"
+                    BorderThickness="1">
+                <StackPanel>
+                    <TextBlock x:Name="ProcessingTitleTextBlock"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+                    <TextBlock x:Name="ProcessingFileTextBlock"
+                               TextWrapping="Wrap"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="0,0,0,10"/>
+                    <TextBlock x:Name="ProcessingOperationTextBlock"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,0,0,6"/>
+                    <TextBlock x:Name="ProcessingStatusTextBlock"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,0,0,16"/>
+                    <ProgressBar x:Name="ProcessingProgressBar"
+                                 Minimum="0" Maximum="100"
+                                 Height="20"
+                                 Foreground="{StaticResource TealBrush}"/>
+                    <TextBlock x:Name="ProcessingPercentageTextBlock"
+                               HorizontalAlignment="Right"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,6,0,12"/>
+                    <ProgressBar Height="4"
+                                 IsIndeterminate="True"
+                                 Foreground="{StaticResource TealBrush}"/>
+                </StackPanel>
+            </Border>
+        </Border>
 
     </Grid>
 

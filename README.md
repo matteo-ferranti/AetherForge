@@ -27,13 +27,16 @@ Processing takes place locally on your computer. You do not need to upload files
 
 ## Latest update — 1.1.0
 
-**Development version: 1.1.0 — not yet released. Latest published release: 1.0.0.**
+**Version 1.1.0** adds OCR, image/PDF conversion, PDF → DOCX, progress feedback, and update checks.
 
 - Automatic English and Italian OCR for PDF → TXT on pages without extractable text, including mixed PDFs.
 - Images → PDF, either separately or combined in a single PDF with ordering and removal controls.
 - PDF → PNG/JPG, with single-page export or a consecutive page range saved in a dedicated folder.
+- PDF → DOCX using the bundled LibreOffice PDF importer to preserve text, images, and page layout where possible.
+- A processing overlay with per-page progress for PDF → TXT, overall batch progress, and an activity indicator for other conversions.
 - Small arrow menus to apply an operation or output format to all compatible pending files.
 - Updated FlameSworn Studio branding, language-specific website links, and a Ko-fi support button.
+- Update checks in the Information tab and at startup, with a saved option to disable automatic checks.
 
 See the **[full version history](CHANGELOG.md)** for earlier releases.
 
@@ -48,7 +51,7 @@ See the **[full version history](CHANGELOG.md)** for earlier releases.
 | Spreadsheets | Conversion between supported spreadsheet formats, PDF export, and CSV export with worksheet selection. CSV input can be exported to PDF. |
 | Presentations | Conversion between PPT, PPTX, and ODP, plus PDF export. |
 | E-books | EPUB conversion to TXT and PDF. |
-| PDF tools | Merge files in a chosen order, extract selected pages or page ranges, and export pages to PNG/JPG. |
+| PDF tools | Merge files in a chosen order, extract selected pages or page ranges, export pages to PNG/JPG, and convert PDF to DOCX with text, images, and layout. |
 
 The file list also provides drag and drop, per-file operation and output selection, processing status, and buttons to open completed results or show them in their folder. The small arrows beside operation and output selectors let you apply a choice to all compatible pending files.
 
@@ -79,7 +82,7 @@ Add PDF files and arrange their order before merging them.
 | Category | Examples of accepted inputs | Conversion outputs |
 | --- | --- | --- |
 | Images | JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC, HEIF, ICO, SVG | PDF, JPG, PNG, WebP, BMP, TIFF, AVIF |
-| PDF | PDF | TXT (with automatic OCR when needed), PNG, JPG |
+| PDF | PDF | TXT (with automatic OCR when needed), DOCX, PNG, JPG |
 | Audio | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS, WMA, AIFF, AC3 | MP3, WAV, FLAC, AAC, M4A, OGG, OPUS |
 | Video | MP4, MKV, AVI, MOV, WebM, WMV, FLV, MPEG, TS | MP4, MKV, MOV, WebM, AVI |
 | Documents | PDF, TXT, DOC, DOCX, ODT, RTF, HTML, EPUB | Available outputs depend on the input format |
@@ -92,12 +95,10 @@ These lists do not imply that every format can be converted to every other forma
 
 **Target platform:** Windows 11 on an Intel or AMD x64 processor.
 
-[**Download AetherForge 1.0.0 — Windows x64 installer**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.0.0/AetherForge-Setup-1.0.0-win-x64.exe)
-
-This download is the published 1.0.0 release. The 1.1.0 features described above are currently available in the source code; its installer has not been published yet.
+[**Download AetherForge 1.1.0 — Windows x64 installer**](https://github.com/matteo-ferranti/AetherForge/releases/download/v1.1.0/AetherForge-Setup-1.1.0-win-x64.exe)
 
 1. Download the installer using the link above.
-2. Run `AetherForge-Setup-1.0.0-win-x64.exe`.
+2. Run `AetherForge-Setup-1.1.0-win-x64.exe`.
 3. Select English or Italian and follow the installation steps. English is selected by default.
 4. Open AetherForge from the Start menu or the optional desktop shortcut.
 
@@ -111,6 +112,14 @@ The current installer targets Windows 11 x64. Windows 10 and ARM compatibility h
 
 ## Getting started
 
+### Updates
+
+From version 1.1.0, use **Check for updates** in the Information tab or leave **Check for updates at startup** enabled. The setting is remembered between launches. Checks contact GitHub and require internet; file processing stays local and works offline. If a newer stable release has a Windows x64 installer, the app asks whether to open its official release page. Downloads and installation remain under your control.
+
+Run the new installer in the existing installation folder to update; uninstalling first is not required. Version 1.0.0 has no update checker, so its first upgrade must be downloaded manually. Startup checks stay silent when offline; manual checks report connection errors.
+
+### Processing files
+
 1. Drag files into the main window or use **Select files**.
 2. Choose an operation and an available output format for each file.
    Use the small arrow beside either selector to apply that choice to all compatible pending files.
@@ -122,6 +131,8 @@ PDF merging uses a separate window where you can add files, arrange their order,
 
 When converting several images to PDF, choose separate outputs or a single PDF, then arrange the image order. For PDF → PNG/JPG, select a page or a consecutive page range; multiple pages are exported into a dedicated folder. PDF → TXT automatically uses OCR on pages without extractable text.
 
+For PDF → DOCX, select DOCX as the output. The converter imports the page contents into Word, including images and editable text when the PDF has a text layer. The processing overlay shows the current file and overall progress. PDF → TXT also reports completed pages; operations without an internal percentage show an activity indicator until they finish.
+
 ## Processing safeguards and limitations
 
 AetherForge includes checks against overwriting input files, temporary output staging for supported processing workflows, image and archive resource limits, and restrictions on certain external resources and active document content.
@@ -131,6 +142,7 @@ These checks do not constitute a complete sandbox or a guarantee that every inpu
 - OCR recognizes English and Italian text locally. Results depend on scan quality; it does not guarantee accurate handwriting recognition or preservation of tables and layout.
 - Automatic OCR runs on pages without extractable text. An image containing text on a page that also has an extractable text layer is not separately recognized.
 - Image → PDF exports the first frame of animated GIFs and the first page of multipage TIFFs.
+- PDF → DOCX attempts to preserve the visual layout. Text may become positioned text boxes, and tables may be represented by lines and text boxes rather than native Word tables. Scanned pages can remain images in the DOCX; automatic OCR currently applies to PDF → TXT.
 - Office and presentation conversion may change layout, fonts, or application-specific features.
 - Operations and quality settings vary by format.
 - Metadata removal is available for supported formats and is not full content anonymization.
@@ -140,7 +152,7 @@ These checks do not constitute a complete sandbox or a guarantee that every inpu
 
 **1.0.0:** the published application and installer passed conversion, installation, and uninstallation checks on the development computer. The application was also tested successfully on a clean Windows 11 installation.
 
-**1.1.0:** OCR, image/PDF conversion, and bulk selection changes have passed functional checks on the development computer. OCR has also been checked in a self-contained Release build. Validation of the new installer and the new components on a clean Windows 11 installation is pending.
+**1.1.0:** OCR, image/PDF conversion, and bulk selection changes have passed functional checks on the development computer. OCR has also been checked in a self-contained Release build. PDF → DOCX and progress feedback have passed additional development checks. PDF → DOCX results remain dependent on the source document. Validation of the new installer and the new components on a clean Windows 11 installation is pending; the successful clean-system test of 1.0.0 does not cover these additions.
 
 ## Building from source
 

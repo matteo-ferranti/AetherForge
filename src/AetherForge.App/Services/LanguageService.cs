@@ -6,6 +6,23 @@ public static class LanguageService
 {
     private static readonly Dictionary<string, string> English = new()
     {
+        ["PdfDocxWorking"] = "Reconstructing the Word document. Please wait.",
+        ["PdfDocxConversionFailed"] = "Unable to convert this PDF to DOCX. The document may be damaged, protected, or use an unsupported layout.",
+        ["ProcessingTitle"] = "Processing…",
+        ["ProcessingOperation"] = "Operation {0} of {1}",
+        ["ProcessingPages"] = "Pages processed: {0} of {1}",
+        ["ProcessingWorking"] = "Processing the file. Please wait.",
+        ["ProcessingSaving"] = "Saving the result…",
+        ["UpdateDialogTitle"] = "AetherForge updates",
+        ["UpdateCheckButton"] = "Check for updates",
+        ["UpdateChecking"] = "Checking…",
+        ["UpdateAutomaticChecks"] = "Check for updates at startup",
+        ["UpdateConnectionInfo"] = "Update checks require an internet connection. Your files are not uploaded.",
+        ["UpdateAvailable"] = "AetherForge {0} is available. Open the official release page to download the installer?\n\nRun the new installer to update your existing installation.",
+        ["UpdateNoUpdate"] = "No newer version with a Windows x64 installer is available.",
+        ["UpdateCheckFailed"] = "Unable to check for updates. Check your internet connection and try again later.",
+        ["UpdateOpenPageError"] = "Unable to open the release page. Visit github.com/matteo-ferranti/AetherForge/releases to download the update.",
+        ["UpdateSettingsSaveError"] = "Unable to save the update preference. The previous setting has been kept.",
         ["PdfImageDialogTitle"] = "PDF to image",
         ["PdfImagePageLabel"] = "Page to export:",
         ["PdfImagePageInvalid"] =
@@ -327,6 +344,23 @@ public static class LanguageService
 
     private static readonly Dictionary<string, string> Italian = new()
     {
+        ["PdfDocxWorking"] = "Ricostruzione del documento Word in corso. Attendi.",
+        ["PdfDocxConversionFailed"] = "Impossibile convertire questo PDF in DOCX. Il documento potrebbe essere danneggiato, protetto o avere un'impaginazione non supportata.",
+        ["ProcessingTitle"] = "Elaborazione in corso…",
+        ["ProcessingOperation"] = "Operazione {0} di {1}",
+        ["ProcessingPages"] = "Pagine elaborate: {0} di {1}",
+        ["ProcessingWorking"] = "Elaborazione del file in corso. Attendi.",
+        ["ProcessingSaving"] = "Salvataggio del risultato…",
+        ["UpdateDialogTitle"] = "Aggiornamenti di AetherForge",
+        ["UpdateCheckButton"] = "Controlla aggiornamenti",
+        ["UpdateChecking"] = "Controllo in corso…",
+        ["UpdateAutomaticChecks"] = "Controlla aggiornamenti all'avvio",
+        ["UpdateConnectionInfo"] = "Il controllo aggiornamenti richiede una connessione internet. I tuoi file non vengono caricati online.",
+        ["UpdateAvailable"] = "È disponibile AetherForge {0}. Vuoi aprire la pagina ufficiale della release per scaricare l'installer?\n\nEsegui il nuovo installer per aggiornare l'installazione esistente.",
+        ["UpdateNoUpdate"] = "Non è disponibile una versione più recente con installer Windows x64.",
+        ["UpdateCheckFailed"] = "Impossibile controllare gli aggiornamenti. Verifica la connessione internet e riprova più tardi.",
+        ["UpdateOpenPageError"] = "Impossibile aprire la pagina della release. Visita github.com/matteo-ferranti/AetherForge/releases per scaricare l'aggiornamento.",
+        ["UpdateSettingsSaveError"] = "Impossibile salvare la preferenza sugli aggiornamenti. È stata mantenuta l'impostazione precedente.",
         ["PdfImageDialogTitle"] = "PDF in immagine",
         ["PdfImagePageLabel"] = "Pagina da esportare:",
         ["PdfImagePageInvalid"] =
@@ -671,6 +705,7 @@ public static class LanguageService
     string[] knownErrorKeys =
     [
         "OutputMatchesOriginal",
+        "PdfDocxConversionFailed",
         "CannotVerifyOutputSafety",
         "InvalidImageOutput",
         "ImageSafetyLimitExceeded",
